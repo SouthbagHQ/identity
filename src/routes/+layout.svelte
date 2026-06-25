@@ -1,9 +1,10 @@
 <script lang="ts">
 	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
 
 	let { children } = $props();
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
-{@render children()}
+<svelte:head><link rel="icon" href="/logo.png" type="image/png" /></svelte:head>
+<div class="southbag-shell">
+	{@render children()}
+</div>

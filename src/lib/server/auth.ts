@@ -1,7 +1,8 @@
 import { env } from "$env/dynamic/private";
-import { betterAuth } from "better-auth/minimal";
+import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { sveltekitCookies } from "better-auth/svelte-kit";
+import { oidcProvider } from "better-auth/plugins";
 import { getRequestEvent } from "$app/server";
 import { getDb } from "$lib/server/db";
 
@@ -10,6 +11,17 @@ const authConfig = {
 	secret: env.BETTER_AUTH_SECRET,
 	emailAndPassword: { enabled: true },
 	plugins: [
+		oidcProvider({
+			loginPage: "/login",
+			consentPage: "/consent",
+			allowDynamicClientRegistration: false,
+			allowPlainCodeChallengeMethod: true,
+			storeClientSecret: "plain",
+			scopes: ["money", "accounts", "transfer_everything", "offline_access"],
+			metadata: {
+				issuer: env.ORIGIN
+			}
+		}),
 		sveltekitCookies(getRequestEvent) // make sure this is the last plugin in the array
 	]
 } satisfies Omit<Parameters<typeof betterAuth>[0], "database">;
