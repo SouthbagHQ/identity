@@ -467,3 +467,8 @@ a[href*="@"] {
 		flex-direction: column;
 	}
 }
+
+.sidebar a.active {
+	background: #eeeeee;
+	font-weight: 700;
+}

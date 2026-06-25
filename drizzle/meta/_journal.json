@@ -15,6 +15,13 @@
       "when": 1782373841549,
       "tag": "0001_grey_franklin_richards",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1782378172393,
+      "tag": "0002_sleepy_morg",
+      "breakpoints": true
     }
   ]
 }

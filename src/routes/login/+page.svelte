@@ -23,6 +23,13 @@
 	</div>
 
 	<form method="post" action="?/signInEmail" use:enhance class="login-form">
+		{#if form?.twoFactorRequired}
+			<div>
+				<p>authenticator code</p>
+				<input name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" required />
+			</div>
+			<button formaction="?/verifyTwoFactor">Verify code</button>
+		{:else}
 		<div>
 			<p>email</p>
 			<input type="email" name="email" placeholder="Enter email" required />
@@ -74,6 +81,7 @@
 			<button formaction="?/signUpEmail">Register</button>
 			<button type="button" class="btn-large" onclick={() => alert('Chat with a Human')}>Chat with a Human</button>
 		</div>
+		{/if}
 	</form>
 
 	{#if form?.message}

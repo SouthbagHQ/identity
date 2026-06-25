@@ -9,6 +9,7 @@ export const user = sqliteTable("user", {
     .default(false)
     .notNull(),
   image: text("image"),
+  twoFactorEnabled: integer("two_factor_enabled", { mode: "boolean" }),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
     .notNull(),
@@ -87,9 +88,28 @@ export const verification = sqliteTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
+export const twoFactor = sqliteTable(
+  "twoFactor",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    secret: text("secret").notNull(),
+    backupCodes: text("backup_codes").notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+  },
+  (table) => [
+    index("twoFactor_secret_idx").on(table.secret),
+    index("twoFactor_userId_idx").on(table.userId),
+  ],
+);
+
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
+  twoFactors: many(twoFactor),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -102,6 +122,13 @@ export const sessionRelations = relations(session, ({ one }) => ({
 export const accountRelations = relations(account, ({ one }) => ({
   user: one(user, {
     fields: [account.userId],
+    references: [user.id],
+  }),
+}));
+
+export const twoFactorRelations = relations(twoFactor, ({ one }) => ({
+  user: one(user, {
+    fields: [twoFactor.userId],
     references: [user.id],
   }),
 }));
