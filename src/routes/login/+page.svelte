@@ -6,16 +6,16 @@
 </script>
 
 <svelte:head>
-	<title>Southbag Online Banking - Secure Login & Account Access</title>
+	<title>Southbag Identity™ - Secure Login & Account Access</title>
 </svelte:head>
 
 <main class="login-page">
 	<header class="plain-header">
-		<img class="logo-box" alt="Southbag Online Banking Logo" src="/logo.png" />
-		<h2>Southbag Online Banking</h2>
+		<img class="logo-box" alt="Southbag Identity™ Logo" src="/logo.png" />
+		<h2>Southbag Identity™</h2>
 	</header>
 
-	<h1>Welcome to Southbag Online Banking</h1>
+	<h1>Welcome to Southbag Identity™</h1>
 	<p>Please log in to access your account.</p>
 	<div class="bank-image" aria-hidden="true">
 		<img alt="" src="/logo.png" />

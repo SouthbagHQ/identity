@@ -17,8 +17,8 @@
 
 <main class="dashboard">
 	<aside class="sidebar">
-		<img class="logo-box" alt="Southbag Online Banking Logo" src="/logo.png" />
-		<h2>Southbag Online Banking</h2>
+		<img class="logo-box" alt="Southbag Identity™ Logo" src="/logo.png" />
+		<h2>Southbag Identity™</h2>
 		<p class="tiny">Logged in as {data.user.email}</p>
 		{#each links as link}
 			<a class:active={isActive(link.href)} href={link.href}>{link.label}</a>

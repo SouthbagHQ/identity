@@ -52,7 +52,7 @@
 
 <main class="southbag-page">
 	<header class="plain-header">
-		<img class="logo-box" alt="Southbag Online Banking Logo" src="/logo.png" />
+		<img class="logo-box" alt="Southbag Identity™ Logo" src="/logo.png" />
 		<div>
 			<h1>Consent???</h1>
 			<p>{data.app?.name || data.clientId || 'Mystery app'} wants identity, money, and vibes.</p>

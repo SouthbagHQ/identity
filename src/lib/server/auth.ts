@@ -7,7 +7,7 @@ import { getRequestEvent } from "$app/server";
 import { getDb } from "$lib/server/db";
 
 const authConfig = {
-  appName: "Southbag Online Banking",
+  appName: "Southbag Identity™",
   baseURL: env.ORIGIN,
   secret: env.BETTER_AUTH_SECRET,
   emailAndPassword: { enabled: true },
@@ -24,7 +24,7 @@ const authConfig = {
       },
     }),
     twoFactor({
-      issuer: "Southbag Online Banking",
+      issuer: "Southbag Identity™",
     }),
     sveltekitCookies(getRequestEvent), // make sure this is the last plugin in the array
   ],

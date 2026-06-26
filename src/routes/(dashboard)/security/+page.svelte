@@ -50,7 +50,7 @@
 		try {
 			const setup = await postTwoFactor('/two-factor/enable', {
 				password: twoFactorPassword,
-				issuer: 'Southbag Online Banking'
+				issuer: 'Southbag Identity™'
 			});
 			if (!setup.totpURI) throw new Error('Two-factor setup did not return a TOTP URI');
 			twoFactorSetup = {
