@@ -96,7 +96,7 @@
 <header class="plain-header">
 	<div>
 		<h1>Security</h1>
-		<p>2FA, active sessions, connected OAuth apps.</p>
+		<p>Southbag cares about your security</p>
 	</div>
 </header>
 
@@ -109,6 +109,7 @@
 			<input bind:value={twoFactorPassword} type="password" autocomplete="current-password" />
 		</label>
 		<div class="button-row">
+			<button type="button" onclick={()=>alert("")}>Submit a security vulnerbility</button>
 			<button type="button" onclick={enableTwoFactor}>Set up 2FA</button>
 			<button type="button" onclick={disableTwoFactor}>Disable</button>
 		</div>

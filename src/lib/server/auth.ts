@@ -7,38 +7,39 @@ import { getRequestEvent } from "$app/server";
 import { getDb } from "$lib/server/db";
 
 const authConfig = {
-	appName: "Southbag Online Banking",
-	baseURL: env.ORIGIN,
-	secret: env.BETTER_AUTH_SECRET,
-	emailAndPassword: { enabled: true },
-	plugins: [
-		oidcProvider({
-			loginPage: "/login",
-			consentPage: "/consent",
-			allowDynamicClientRegistration: false,
-			allowPlainCodeChallengeMethod: true,
-			storeClientSecret: "plain",
-			scopes: ["money", "accounts", "transfer_everything", "offline_access"],
-			metadata: {
-				issuer: env.ORIGIN
-			}
-		}),
-		twoFactor({
-			issuer: "Southbag Online Banking"
-		}),
-		sveltekitCookies(getRequestEvent) // make sure this is the last plugin in the array
-	]
+  appName: "Southbag Online Banking",
+  baseURL: env.ORIGIN,
+  secret: env.BETTER_AUTH_SECRET,
+  emailAndPassword: { enabled: true },
+  plugins: [
+    oidcProvider({
+      loginPage: "/login",
+      consentPage: "/consent",
+      allowDynamicClientRegistration: false,
+      allowPlainCodeChallengeMethod: true,
+      storeClientSecret: "plain",
+      scopes: ["money", "accounts", "transfer_everything", "offline_access"],
+      metadata: {
+        issuer: env.ORIGIN,
+      },
+    }),
+    twoFactor({
+      issuer: "Southbag Online Banking",
+    }),
+    sveltekitCookies(getRequestEvent), // make sure this is the last plugin in the array
+  ],
 } satisfies Omit<Parameters<typeof betterAuth>[0], "database">;
 
-export const createAuth = (d1: D1Database) => betterAuth({
-	...authConfig,
-	database: drizzleAdapter(getDb(d1), { provider: 'sqlite' })
-});
+export const createAuth = (d1: D1Database) =>
+  betterAuth({
+    ...authConfig,
+    database: drizzleAdapter(getDb(d1), { provider: "sqlite" }),
+  });
 
 /**
-* DO NOT USE!
-*
-* This instance is used by the `better-auth` CLI for schema generation ONLY.
-* To access `auth` at runtime, use `event.locals.auth`.
-*/
+ * DO NOT USE!
+ *
+ * This instance is used by the `better-auth` CLI for schema generation ONLY.
+ * To access `auth` at runtime, use `event.locals.auth`.
+ */
 export const auth = createAuth(null!);

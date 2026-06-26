@@ -19,7 +19,6 @@
 <header class="plain-header">
 	<div>
 		<h1>Account</h1>
-		<p>Name, email, password, etc.</p>
 	</div>
 </header>
 

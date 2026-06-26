@@ -12,7 +12,6 @@
 <header class="plain-header">
 	<div>
 		<h1>Developer</h1>
-		<p>OIDC app creation stuff.</p>
 	</div>
 </header>
 
@@ -33,7 +32,6 @@
 
 	<div class="bad-card form-stack">
 		<strong>Create an OIDC app</strong>
-		<p>New apps are untrusted by default. Users cannot mark them trusted.</p>
 		<a class="button-link" href="/developer/apps/new">Create app</a>
 		<a href="/api/auth/.well-known/openid-configuration">OIDC Discovery</a>
 		<a href="/api/auth/oauth2/register">Register Endpoint</a>
@@ -50,8 +48,7 @@
 					<p class="tiny"><strong>client_id:</strong> {app.clientId}</p>
 					<p class="tiny"><strong>client_secret:</strong> {app.clientSecret || 'not shown'}</p>
 					<p class="tiny"><strong>redirects:</strong> {app.redirectUrls}</p>
-					<p><strong>Status:</strong> {app.trusted ? 'trusted by Southbag policy' : 'untrusted by default'}</p>
-					<p class="tiny">{app.memo}</p>
+					<p><strong>Status:</strong> {app.trusted ? 'trusted by Kevin' : 'not trusted by Kevin'}</p>
 				</div>
 				<form method="post" action="?/deleteApp" use:enhance class="form-stack">
 					<input type="hidden" name="clientId" value={app.clientId} />
