@@ -1,0 +1,5 @@
+import { oauthProviderAuthServerMetadata } from '@better-auth/oauth-provider';
+import type { RequestHandler } from './$types';
+
+export const GET: RequestHandler = (event) =>
+	oauthProviderAuthServerMetadata(event.locals.auth)(event.request);

@@ -16,7 +16,7 @@ const handleBetterAuth: Handle = async ({ event, resolve }) => {
 		event.locals.user = session.user;
 	}
 
-	if (event.url.pathname.startsWith('/api/auth/') || event.url.pathname.startsWith('/.well-known/')) {
+	if (event.url.pathname.startsWith('/api/auth/')) {
 		return auth.handler(event.request);
 	}
 
