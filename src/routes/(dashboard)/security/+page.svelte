@@ -96,7 +96,7 @@
 <header class="plain-header">
 	<div>
 		<h1>Security</h1>
-		<p>Southbag cares about your security</p>
+		<p>Southbag helps protect your account 🔐 with modern security controls, simple two-factor authentication, and clear sign-in settings designed to keep your identity, access, and personal information safer every time you use Southbag ✨, whether you are checking your profile, managing connected apps, or signing in from a new device 🛡️.</p>
 	</div>
 </header>
 
