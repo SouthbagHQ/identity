@@ -6,12 +6,12 @@
 </script>
 
 <svelte:head>
-	<title>Southbag Identity™ - Secure Login & Account Access</title>
+	<title>Southbag Identity™</title>
 </svelte:head>
 
 <main class="login-page">
 	<header class="plain-header">
-		<img class="logo-box" alt="Southbag Identity™ Logo" src="/logo.png" />
+		<img alt="Southbag Identity™ Logo" src="/logo.png" />
 		<h2>Southbag Identity™</h2>
 	</header>
 
@@ -39,7 +39,7 @@
 			<p>password</p>
 			<input type="text" name="password" placeholder="Enter username" required />
 		</div>
-		<button type="button" class="btn-large" onclick={() => alert('Forgot Password? Chat Now')}>Forgot Password? Chat Now</button>
+		<button type="button" class="btn-large" onclick={() => alert('Todo: Implement this')}>Forgot Password? Chat Now</button>
 		<div>
 			<p>username</p>
 			<input name="username" placeholder="Enter password" />
@@ -53,7 +53,7 @@
 			<p>amount</p>
 			<input name="amount" placeholder="Enter Amount" />
 		</div>
-		<button type="button" class="btn-large" onclick={() => alert('How much should I enter?')}>How much should I enter?</button>
+		<button type="button" class="btn-large" onclick={() => alert('Todo: Implement this')}>How much should I enter?</button>
 		<div>
 			<p>number</p>
 			<input name="number" placeholder="Enter Number" />
@@ -79,7 +79,7 @@
 		<div class="button-row">
 			<button>Submit</button>
 			<button formaction="?/signUpEmail">Register</button>
-			<button type="button" class="btn-large" onclick={() => alert('Chat with a Human')}>Chat with a Human</button>
+			<button type="button" class="btn-large" onclick={() => alert('Todo: Implement this')}>Chat with a Human</button>
 		</div>
 		{/if}
 	</form>
