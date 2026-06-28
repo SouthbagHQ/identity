@@ -1,14 +1,22 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "identity",
+	"account_id": "1044a3131c99356eba069325d3be3788",
 	"compatibility_date": "2026-06-25",
 	"compatibility_flags": ["nodejs_compat"],
-	"pages_build_output_dir": ".svelte-kit/cloudflare",
+	"vars": {
+		"ORIGIN": "https://identity.southbag.cc"
+	},
+	"main": ".svelte-kit/cloudflare/_worker.js",
+	"assets": {
+		"directory": ".svelte-kit/cloudflare",
+		"binding": "ASSETS"
+	},
 	"d1_databases": [
 		{
 			"binding": "DB",
 			"database_name": "identity",
-			"database_id": "fe5229b0-96e0-4063-a0f1-4702ad191f17"
+			"database_id": "bbbcde95-de11-4062-8006-18b68cc8ed89"
 		}
 	]
 }

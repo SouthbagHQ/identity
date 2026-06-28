@@ -16,7 +16,7 @@
 		"db:studio": "drizzle-kit studio --config drizzle.local.config.ts",
 		"db:studio:remote": "drizzle-kit studio",
 		"cf:db:create": "wrangler d1 create identity",
-		"cf:deploy": "wrangler pages deploy .svelte-kit/cloudflare",
+		"cf:deploy": "wrangler deploy",
 		"auth:schema": "better-auth generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes"
 	},
 	"devDependencies": {
