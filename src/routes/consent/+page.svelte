@@ -17,12 +17,13 @@
 		const response = await fetch('/api/auth/oauth2/consent', {
 			method: 'POST',
 			headers: { 'content-type': 'application/json' },
-			body: JSON.stringify({ accept, consent_code: data.consentCode })
+			body: JSON.stringify({ accept, oauth_query: data.oauthQuery })
 		});
 
-		const payload = (await response.json().catch(() => null)) as { redirectURI?: string; message?: string } | null;
-		if (payload?.redirectURI) {
-			goto(payload.redirectURI);
+		const payload = (await response.json().catch(() => null)) as { url?: string; redirect_uri?: string; message?: string } | null;
+		const redirectUrl = payload?.url ?? payload?.redirect_uri;
+		if (redirectUrl) {
+			goto(redirectUrl);
 			return;
 		}
 

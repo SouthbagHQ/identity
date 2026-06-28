@@ -3,7 +3,7 @@ import { and, desc, eq } from 'drizzle-orm';
 import { getDb } from '$lib/server/db';
 import {
 	account,
-	oauthApplication,
+	oauthClient,
 	oauthConsent,
 	session,
 	southbagAppTrust,
@@ -11,6 +11,7 @@ import {
 } from '$lib/server/db/schema';
 
 const serializeDate = (date: Date | null | undefined) => date?.toISOString() ?? null;
+const serializeList = (value: unknown) => (Array.isArray(value) ? value.join(' ') : '');
 
 const cleanRedirects = (value: FormDataEntryValue | null) =>
 	(value?.toString() ?? '')
@@ -32,36 +33,28 @@ export const getOwnedApps = async (event: RequestEvent) => {
 	const db = getDb(event.platform!.env.DB);
 	const rows = await db
 		.select({
-			clientId: oauthApplication.clientId,
-			clientSecret: oauthApplication.clientSecret,
-			redirectUrls: oauthApplication.redirectUrls,
-			disabled: oauthApplication.disabled,
-			createdAt: oauthApplication.createdAt,
+			clientId: oauthClient.clientId,
+			redirectUris: oauthClient.redirectUris,
+			disabled: oauthClient.disabled,
+			createdAt: oauthClient.createdAt,
+			name: oauthClient.name,
+			icon: oauthClient.icon,
 			trusted: southbagAppTrust.trusted,
 			memo: southbagAppTrust.memo
 		})
-		.from(oauthApplication)
-		.leftJoin(southbagAppTrust, eq(oauthApplication.clientId, southbagAppTrust.clientId))
-		.where(eq(oauthApplication.userId, event.locals.user!.id))
-		.orderBy(desc(oauthApplication.createdAt));
+		.from(oauthClient)
+		.leftJoin(southbagAppTrust, eq(oauthClient.clientId, southbagAppTrust.clientId))
+		.where(eq(oauthClient.userId, event.locals.user!.id))
+		.orderBy(desc(oauthClient.createdAt));
 
-	return Promise.all(
-		rows.map(async (row) => {
-			const client = await event.locals.auth.api
-				.getOAuthClient({
-					headers: event.request.headers,
-					params: { id: row.clientId }
-				})
-				.catch(() => null);
-
-			return {
-				...row,
-				createdAt: serializeDate(row.createdAt),
-				name: client?.name ?? row.clientId,
-				icon: client?.icon ?? null
-			};
-		})
-	);
+	return rows.map((row) => ({
+		...row,
+		clientSecret: null,
+		redirectUrls: serializeList(row.redirectUris),
+		createdAt: serializeDate(row.createdAt),
+		name: row.name ?? row.clientId,
+		icon: row.icon ?? null
+	}));
 };
 
 export const getAuthorizedApps = async (event: RequestEvent) => {
@@ -73,21 +66,22 @@ export const getAuthorizedApps = async (event: RequestEvent) => {
 			scopes: oauthConsent.scopes,
 			createdAt: oauthConsent.createdAt,
 			updatedAt: oauthConsent.updatedAt,
-			consentGiven: oauthConsent.consentGiven,
-			name: oauthApplication.name,
-			icon: oauthApplication.icon,
-			redirectUrls: oauthApplication.redirectUrls,
+			name: oauthClient.name,
+			icon: oauthClient.icon,
+			redirectUris: oauthClient.redirectUris,
 			trusted: southbagAppTrust.trusted,
 			memo: southbagAppTrust.memo
 		})
 		.from(oauthConsent)
-		.innerJoin(oauthApplication, eq(oauthConsent.clientId, oauthApplication.clientId))
-		.leftJoin(southbagAppTrust, eq(oauthApplication.clientId, southbagAppTrust.clientId))
-		.where(and(eq(oauthConsent.userId, event.locals.user!.id), eq(oauthConsent.consentGiven, true)))
+		.innerJoin(oauthClient, eq(oauthConsent.clientId, oauthClient.clientId))
+		.leftJoin(southbagAppTrust, eq(oauthClient.clientId, southbagAppTrust.clientId))
+		.where(eq(oauthConsent.userId, event.locals.user!.id))
 		.orderBy(desc(oauthConsent.updatedAt));
 
 	return rows.map((row) => ({
 		...row,
+		scopes: serializeList(row.scopes),
+		redirectUrls: serializeList(row.redirectUris),
 		createdAt: serializeDate(row.createdAt),
 		updatedAt: serializeDate(row.updatedAt)
 	}));
@@ -184,7 +178,7 @@ export const createApp = async (event: RequestEvent) => {
 		return fail(400, { message: 'A redirect URL is inconveniently mandatory.' });
 	}
 
-	const client = await event.locals.auth.api.registerOAuthApplication({
+	const client = (await event.locals.auth.api.createOAuthClient({
 		headers: event.request.headers,
 		body: {
 			client_name: name,
@@ -193,13 +187,9 @@ export const createApp = async (event: RequestEvent) => {
 			redirect_uris: redirectUrls,
 			token_endpoint_auth_method: 'client_secret_basic',
 			grant_types: ['authorization_code'],
-			response_types: ['code'],
-			metadata: {
-				registered_from: 'southbag dashboard',
-				warning: 'self-service registration, obviously'
-			}
+			response_types: ['code']
 		}
-	});
+	})) as { client_id: string };
 
 	await db.insert(southbagAppTrust).values({
 		clientId: client.client_id,
@@ -223,14 +213,14 @@ export const deleteApp = async (event: RequestEvent) => {
 	if (!clientId) return fail(400, { message: 'No client id.' });
 
 	const [ownedApp] = await db
-		.select({ clientId: oauthApplication.clientId })
-		.from(oauthApplication)
-		.where(and(eq(oauthApplication.clientId, clientId), eq(oauthApplication.userId, event.locals.user.id)))
+		.select({ clientId: oauthClient.clientId })
+		.from(oauthClient)
+		.where(and(eq(oauthClient.clientId, clientId), eq(oauthClient.userId, event.locals.user.id)))
 		.limit(1);
 
 	if (!ownedApp) return fail(404, { message: 'Not your app.' });
 
-	await db.delete(oauthApplication).where(eq(oauthApplication.clientId, clientId));
+	await db.delete(oauthClient).where(eq(oauthClient.clientId, clientId));
 
 	return { message: 'Deleted app. Probably.' };
 };

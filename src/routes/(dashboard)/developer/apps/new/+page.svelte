@@ -6,12 +6,12 @@
 </script>
 
 <svelte:head>
-	<title>Southbag Identity - New OIDC App</title>
+	<title>Southbag Identity - New OAuth App</title>
 </svelte:head>
 
 <header class="plain-header">
 	<div>
-		<h1>New OIDC app</h1>
+		<h1>New OAuth app</h1>
 		<p>Create a developer app. It will not be trusted by users.</p>
 	</div>
 </header>
@@ -22,7 +22,7 @@
 
 <div class="dashboard-grid">
 	<form method="post" action="?/createApp" use:enhance class="bad-card form-stack">
-		<strong>Create OIDC app</strong>
+		<strong>Create OAuth app</strong>
 		<label>
 			Application name
 			<input name="name" placeholder="Enter app" required />
@@ -46,7 +46,7 @@
 	</form>
 
 	<div class="bad-card">
-		<strong>OIDC endpoints</strong>
+		<strong>OAuth/OIDC endpoints</strong>
 		<p>Authorization endpoint:</p>
 		<p class="tiny">{data.origin}/api/auth/oauth2/authorize</p>
 		<p>Token endpoint:</p>

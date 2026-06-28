@@ -2,7 +2,8 @@ import { env } from "$env/dynamic/private";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { sveltekitCookies } from "better-auth/svelte-kit";
-import { oidcProvider, twoFactor } from "better-auth/plugins";
+import { jwt, twoFactor } from "better-auth/plugins";
+import { oauthProvider } from "@better-auth/oauth-provider";
 import { getRequestEvent } from "$app/server";
 import { getDb } from "$lib/server/db";
 
@@ -12,15 +13,28 @@ const authConfig = {
   secret: env.BETTER_AUTH_SECRET,
   emailAndPassword: { enabled: true },
   plugins: [
-    oidcProvider({
+    jwt({
+      jwt: {
+        issuer: env.ORIGIN,
+      },
+    }),
+    oauthProvider({
       loginPage: "/login",
       consentPage: "/consent",
       allowDynamicClientRegistration: false,
       allowPlainCodeChallengeMethod: true,
-      storeClientSecret: "plain",
-      scopes: ["money", "accounts", "transfer_everything", "offline_access"],
-      metadata: {
-        issuer: env.ORIGIN,
+      scopes: [
+        "openid",
+        "profile",
+        "email",
+        "money",
+        "accounts",
+        "transfer_everything",
+        "offline_access",
+      ],
+      silenceWarnings: {
+        oauthAuthServerConfig: true,
+        openidConfig: true,
       },
     }),
     twoFactor({

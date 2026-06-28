@@ -21,7 +21,7 @@
 
 <div class="dashboard-grid">
 	<div class="bad-card">
-		<strong>OIDC endpoints</strong>
+		<strong>OAuth/OIDC endpoints</strong>
 		<p>Authorization endpoint:</p>
 		<p class="tiny">{data.origin}/api/auth/oauth2/authorize</p>
 		<p>Token endpoint:</p>
@@ -31,15 +31,16 @@
 	</div>
 
 	<div class="bad-card form-stack">
-		<strong>Create an OIDC app</strong>
+		<strong>Create an OAuth app</strong>
 		<a class="button-link" href="/developer/apps/new">Create app</a>
-		<a href="/api/auth/.well-known/openid-configuration">OIDC Discovery</a>
+		<a href="/.well-known/openid-configuration">OIDC Discovery</a>
+		<a href="/.well-known/oauth-authorization-server">OAuth Metadata</a>
 		<a href="/api/auth/oauth2/register">Register Endpoint</a>
 	</div>
 </div>
 
 <div class="bad-panel">
-	<strong>Your OIDC apps</strong>
+	<strong>Your OAuth apps</strong>
 	<div class="app-list">
 		{#each data.apps as app}
 			<article class="app-row">
