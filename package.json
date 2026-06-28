@@ -13,7 +13,8 @@
 		"db:push": "drizzle-kit push",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
-		"db:studio": "drizzle-kit studio",
+		"db:studio": "drizzle-kit studio --config drizzle.local.config.ts",
+		"db:studio:remote": "drizzle-kit studio",
 		"cf:db:create": "wrangler d1 create identity",
 		"cf:deploy": "wrangler pages deploy .svelte-kit/cloudflare",
 		"auth:schema": "better-auth generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes"
@@ -21,6 +22,7 @@
 	"devDependencies": {
 		"@better-auth/cli": "~1.4.21",
 		"@cloudflare/workers-types": "^4.20260625.1",
+		"@libsql/client": "^0.17.4",
 		"@sveltejs/adapter-cloudflare": "^7.2.9",
 		"@sveltejs/kit": "^2.63.0",
 		"@sveltejs/vite-plugin-svelte": "^7.1.2",
