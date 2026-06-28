@@ -1,5 +1,5 @@
 import type { Actions, PageServerLoad } from './$types';
-import { deleteApp, getOrigin, getOwnedApps } from '$lib/server/dashboard';
+import { deleteApp, getOrigin, getOwnedApps, updateApp } from '$lib/server/dashboard';
 
 export const load: PageServerLoad = async (event) => ({
 	apps: await getOwnedApps(event),
@@ -7,5 +7,6 @@ export const load: PageServerLoad = async (event) => ({
 });
 
 export const actions: Actions = {
+	updateApp,
 	deleteApp
 };

@@ -34,10 +34,13 @@ export const getOwnedApps = async (event: RequestEvent) => {
 	const rows = await db
 		.select({
 			clientId: oauthClient.clientId,
+			clientSecret: oauthClient.clientSecret,
 			redirectUris: oauthClient.redirectUris,
 			disabled: oauthClient.disabled,
 			createdAt: oauthClient.createdAt,
+			updatedAt: oauthClient.updatedAt,
 			name: oauthClient.name,
+			uri: oauthClient.uri,
 			icon: oauthClient.icon,
 			trusted: southbagAppTrust.trusted,
 			memo: southbagAppTrust.memo
@@ -49,10 +52,11 @@ export const getOwnedApps = async (event: RequestEvent) => {
 
 	return rows.map((row) => ({
 		...row,
-		clientSecret: null,
 		redirectUrls: serializeList(row.redirectUris),
 		createdAt: serializeDate(row.createdAt),
+		updatedAt: serializeDate(row.updatedAt),
 		name: row.name ?? row.clientId,
+		uri: row.uri ?? '',
 		icon: row.icon ?? null
 	}));
 };
@@ -199,6 +203,47 @@ export const createApp = async (event: RequestEvent) => {
 	});
 
 	return { message: `Created ${name}. Save the client secret now; it may not be shown again.` };
+};
+
+export const updateApp = async (event: RequestEvent) => {
+	if (!event.locals.user) {
+		return fail(401, { message: 'Login first.' });
+	}
+
+	const db = getDb(event.platform!.env.DB);
+	const formData = await event.request.formData();
+	const clientId = formData.get('clientId')?.toString() ?? '';
+	const redirectUrls = cleanRedirects(formData.get('redirectUrls'));
+	const name = formData.get('name')?.toString().trim() || 'Southbag unnamed integration';
+	const uri = formData.get('clientUri')?.toString().trim() || null;
+	const icon = formData.get('icon')?.toString().trim() || null;
+
+	if (!clientId) return fail(400, { message: 'No client id.' });
+
+	if (redirectUrls.length === 0) {
+		return fail(400, { message: 'A redirect URL is still inconveniently mandatory.' });
+	}
+
+	const [ownedApp] = await db
+		.select({ clientId: oauthClient.clientId })
+		.from(oauthClient)
+		.where(and(eq(oauthClient.clientId, clientId), eq(oauthClient.userId, event.locals.user.id)))
+		.limit(1);
+
+	if (!ownedApp) return fail(404, { message: 'Not your app.' });
+
+	await db
+		.update(oauthClient)
+		.set({
+			name,
+			uri,
+			icon,
+			redirectUris: redirectUrls,
+			updatedAt: new Date()
+		})
+		.where(eq(oauthClient.clientId, clientId));
+
+	return { message: `Updated ${name}.` };
 };
 
 export const deleteApp = async (event: RequestEvent) => {

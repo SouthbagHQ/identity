@@ -44,17 +44,41 @@
 	<div class="app-list">
 		{#each data.apps as app}
 			<article class="app-row">
-				<div>
+				<form method="post" action="?/updateApp" use:enhance class="form-stack">
 					<strong>{app.name || 'Unnamed app'}</strong>
 					<p class="tiny"><strong>client_id:</strong> {app.clientId}</p>
-					<p class="tiny"><strong>client_secret:</strong> {app.clientSecret || 'not shown'}</p>
-					<p class="tiny"><strong>redirects:</strong> {app.redirectUrls}</p>
-					<p><strong>Status:</strong> {app.trusted ? 'trusted by Kevin' : 'not trusted by Kevin'}</p>
-				</div>
-				<form method="post" action="?/deleteApp" use:enhance class="form-stack">
+					<p class="tiny"><strong>client_secret:</strong> {app.clientSecret || 'missing, somehow'}</p>
 					<input type="hidden" name="clientId" value={app.clientId} />
-					<button>Delete</button>
+					<label>
+						Application name
+						<input name="name" value={app.name} required />
+					</label>
+					<label>
+						Homepage URL
+						<input name="clientUri" value={app.uri} placeholder="Enter website" />
+					</label>
+					<label>
+						Logo URL
+						<input name="icon" value={app.icon || ''} placeholder="Enter logo" />
+					</label>
+					<label>
+						Redirect URLs
+						<textarea name="redirectUrls" rows="4" required>{app.redirectUrls}</textarea>
+					</label>
+					<p><strong>Status:</strong> {app.trusted ? 'trusted by Kevin' : 'not trusted by Kevin'}</p>
+					<div class="button-row">
+						<button>Save</button>
+					</div>
 				</form>
+				<div class="form-stack">
+					<p class="tiny"><strong>redirects:</strong> {app.redirectUrls || 'none'}</p>
+					<p class="tiny"><strong>homepage:</strong> {app.uri || 'none'}</p>
+					<p class="tiny"><strong>logo:</strong> {app.icon || 'none'}</p>
+					<form method="post" action="?/deleteApp" use:enhance class="form-stack">
+						<input type="hidden" name="clientId" value={app.clientId} />
+						<button>Delete</button>
+					</form>
+				</div>
 			</article>
 		{:else}
 			<p>No developer apps yet.</p>
