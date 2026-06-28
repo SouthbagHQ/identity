@@ -62,7 +62,6 @@ export const actions: Actions = {
 		const formData = await event.request.formData();
 		const email = formData.get('email')?.toString() ?? '';
 		const password = formData.get('password')?.toString() ?? '';
-		const name = formData.get('name')?.toString() || 'Southbag Customer';
 
 		try {
 			await event.locals.auth.api.signUpEmail({
@@ -70,7 +69,7 @@ export const actions: Actions = {
 				body: {
 					email,
 					password,
-					name,
+					name: "Southbag Customer",
 					callbackURL: '/home'
 				}
 			});
