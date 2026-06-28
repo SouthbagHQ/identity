@@ -12,6 +12,11 @@ const authConfig = {
   baseURL: env.ORIGIN,
   secret: env.BETTER_AUTH_SECRET,
   emailAndPassword: { enabled: true },
+  user: {
+    deleteUser: {
+      enabled: true,
+    },
+  },
   plugins: [
     jwt({
       jwt: {
