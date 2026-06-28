@@ -23,7 +23,6 @@
 		{#each links as link}
 			<a class:active={isActive(link.href)} href={link.href}>{link.label}</a>
 		{/each}
-		<a href="/.well-known/openid-configuration">OIDC Discovery</a>
 		<a href="/login">Login Page</a>
 		<form method="post" action="/home?/signOut" use:enhance>
 			<button>Sign out</button>
