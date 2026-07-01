@@ -1,6 +1,7 @@
 import type { Handle } from '@sveltejs/kit';
 import { building } from '$app/environment';
 import { createAuth } from '$lib/server/auth';
+import { corsHeaders, withCors } from '$lib/server/cors';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {
@@ -17,7 +18,19 @@ const handleBetterAuth: Handle = async ({ event, resolve }) => {
 	}
 
 	if (event.url.pathname.startsWith('/api/auth/')) {
-		return auth.handler(event.request);
+		const origin = event.request.headers.get('origin');
+
+		if (event.request.method === 'OPTIONS') {
+			return new Response(null, {
+				status: 204,
+				headers: corsHeaders(
+					origin,
+					event.request.headers.get('access-control-request-headers'),
+				),
+			});
+		}
+
+		return withCors(await auth.handler(event.request), origin);
 	}
 
 	return svelteKitHandler({ event, resolve, auth, building });

@@ -7,20 +7,13 @@ import { oauthProvider } from "@better-auth/oauth-provider";
 import { getRequestEvent } from "$app/server";
 import { getDb } from "$lib/server/db";
 import { openAPI } from "better-auth/plugins";
+import { TRUSTED_ORIGINS } from "$lib/server/cors";
 
 const authConfig = {
   appName: "Southbag Identity™",
   baseURL: env.ORIGIN,
   secret: env.BETTER_AUTH_SECRET,
-  trustedOrigins: [
-    "https://southbag.cc",
-    "https://www.southbag.cc",
-    "https://identity.southbag.cc",
-    "http://localhost:4321",
-    "http://127.0.0.1:4321",
-    "http://localhost:5173",
-    "https://127.0.0.1:5173",
-  ],
+  trustedOrigins: [...TRUSTED_ORIGINS],
   advanced: {
     crossSubDomainCookies: {
       enabled: true,
