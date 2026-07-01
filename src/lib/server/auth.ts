@@ -12,6 +12,21 @@ const authConfig = {
   appName: "Southbag Identity™",
   baseURL: env.ORIGIN,
   secret: env.BETTER_AUTH_SECRET,
+  trustedOrigins: [
+    "https://southbag.cc",
+    "https://www.southbag.cc",
+    "https://identity.southbag.cc",
+    "http://localhost:4321",
+    "http://127.0.0.1:4321",
+    "http://localhost:5173",
+    "https://127.0.0.1:5173",
+  ],
+  advanced: {
+    crossSubDomainCookies: {
+      enabled: true,
+      domain: "southbag.cc",
+    },
+  },
   emailAndPassword: { enabled: true },
   user: {
     deleteUser: {
