@@ -6,6 +6,7 @@ import { jwt, twoFactor } from "better-auth/plugins";
 import { oauthProvider } from "@better-auth/oauth-provider";
 import { getRequestEvent } from "$app/server";
 import { getDb } from "$lib/server/db";
+import { openAPI } from "better-auth/plugins";
 
 const authConfig = {
   appName: "Southbag Identity™",
@@ -45,6 +46,7 @@ const authConfig = {
     twoFactor({
       issuer: "Southbag Identity™",
     }),
+    openAPI(),
     sveltekitCookies(getRequestEvent), // make sure this is the last plugin in the array
   ],
 } satisfies Omit<Parameters<typeof betterAuth>[0], "database">;
