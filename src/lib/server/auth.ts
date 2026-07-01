@@ -8,6 +8,7 @@ import { getRequestEvent } from "$app/server";
 import { getDb } from "$lib/server/db";
 import { openAPI } from "better-auth/plugins";
 import { TRUSTED_ORIGINS } from "$lib/server/cors";
+import { hashPassword, verifyPassword } from "$lib/server/password";
 
 const authConfig = {
   appName: "Southbag Identity™",
@@ -20,7 +21,10 @@ const authConfig = {
       domain: "southbag.cc",
     },
   },
-  emailAndPassword: { enabled: true },
+  emailAndPassword: {
+    enabled: true,
+    password: { hash: hashPassword, verify: verifyPassword },
+  },
   user: {
     deleteUser: {
       enabled: true,
