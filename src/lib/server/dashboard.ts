@@ -173,7 +173,6 @@ export const createApp = async (event: RequestEvent) => {
 		return fail(401, { message: 'Login first.' });
 	}
 
-	const db = getDb(event.platform!.env.DB);
 	const formData = await event.request.formData();
 	const redirectUrls = cleanRedirects(formData.get('redirectUrls'));
 	const name = formData.get('name')?.toString().trim() || 'Southbag unnamed integration';
@@ -182,7 +181,7 @@ export const createApp = async (event: RequestEvent) => {
 		return fail(400, { message: 'A redirect URL is inconveniently mandatory.' });
 	}
 
-	const client = (await event.locals.auth.api.createOAuthClient({
+	await event.locals.auth.api.createOAuthClient({
 		headers: event.request.headers,
 		body: {
 			client_name: name,
@@ -193,13 +192,6 @@ export const createApp = async (event: RequestEvent) => {
 			grant_types: ['authorization_code'],
 			response_types: ['code']
 		}
-	})) as { client_id: string };
-
-	await db.insert(southbagAppTrust).values({
-		clientId: client.client_id,
-		trusted: false,
-		trustedBy: 'nobody',
-		memo: 'Freshly created and therefore suspicious.'
 	});
 
 	return { message: `Created ${name}. Save the client secret now; it may not be shown again.` };

@@ -9,6 +9,7 @@ import { getDb } from "$lib/server/db";
 import { openAPI } from "better-auth/plugins";
 import { TRUSTED_ORIGINS } from "$lib/server/cors";
 import { hashPassword, verifyPassword } from "$lib/server/password";
+import { southbagTrustPlugin } from "$lib/server/plugins/southbag-trust";
 
 const authConfig = {
   appName: "Southbag Identity™",
@@ -59,14 +60,23 @@ const authConfig = {
       issuer: "Southbag Identity™",
     }),
     openAPI(),
-    sveltekitCookies(getRequestEvent), // make sure this is the last plugin in the array
   ],
-} satisfies Omit<Parameters<typeof betterAuth>[0], "database">;
+} satisfies Omit<Parameters<typeof betterAuth>[0], "database" | "plugins"> & {
+  plugins: Exclude<
+    Parameters<typeof betterAuth>[0]["plugins"],
+    undefined
+  >;
+};
 
 export const createAuth = (d1: D1Database) =>
   betterAuth({
     ...authConfig,
     database: drizzleAdapter(getDb(d1), { provider: "sqlite" }),
+    plugins: [
+      ...authConfig.plugins,
+      southbagTrustPlugin(d1),
+      sveltekitCookies(getRequestEvent), // keep this last
+    ],
   });
 
 /**
