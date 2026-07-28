@@ -39,6 +39,8 @@
 		"wrangler": "^4.0.0"
 	},
 	"dependencies": {
-		"@better-auth/oauth-provider": "~1.4.21"
+		"@better-auth/oauth-provider": "~1.4.21",
+		"jsqr": "^1.4.0",
+		"uqr": "^0.1.3"
 	}
 }

@@ -11,6 +11,7 @@
 		{ href: '/home', label: 'Home' },
 		{ href: '/account', label: 'Account' },
 		{ href: '/security', label: 'Security' },
+		{ href: '/southbag-id', label: 'Southbag ID™' },
 		{ href: '/developer', label: 'Developer' }
 	];
 

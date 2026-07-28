@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import SouthbagIdLogin from '$lib/components/SouthbagIdLogin.svelte';
 	import type { ActionData } from './$types';
 
 	let { form }: { form: ActionData } = $props();
@@ -17,6 +18,9 @@
 
 	<h1>Welcome to Southbag Identity™</h1>
 	<p>Please log in to access your account.</p>
+
+	<SouthbagIdLogin />
+
 	<div class="bank-image" aria-hidden="true">
 		<img alt="" src="/logo.png" />
 		<span>BANK</span>

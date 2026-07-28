@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm';
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import { oauthClient } from './auth.schema';
+import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { oauthClient, user } from './auth.schema';
 
 export const task = sqliteTable('task', {
 	id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
@@ -20,5 +20,30 @@ export const southbagAppTrust = sqliteTable('southbag_app_trust', {
 		.$onUpdate(() => new Date())
 		.notNull()
 });
+
+/**
+ * Southbag ID™ face vault. One face per customer, age recorded once and never again.
+ */
+export const southbagIdCredential = sqliteTable(
+	'southbag_id_credential',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		faceId: text('face_id').notNull().unique(),
+		photo: text('photo').notNull(),
+		age: integer('age').notNull(),
+		verdict: text('verdict'),
+		createdAt: integer('created_at', { mode: 'timestamp_ms' })
+			.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+			.notNull(),
+		updatedAt: integer('updated_at', { mode: 'timestamp_ms' })
+			.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+			.$onUpdate(() => new Date())
+			.notNull()
+	},
+	(table) => [index('southbag_id_credential_userId_idx').on(table.userId)]
+);
 
 export * from './auth.schema';

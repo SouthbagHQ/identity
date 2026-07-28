@@ -10,6 +10,23 @@ import { openAPI } from "better-auth/plugins";
 import { TRUSTED_ORIGINS } from "$lib/server/cors";
 import { hashPassword, verifyPassword } from "$lib/server/password";
 import { southbagTrustPlugin } from "$lib/server/plugins/southbag-trust";
+import { southbagId } from "$lib/server/plugins/southbag-id";
+
+const COOKIE_DOMAIN = "southbag.cc";
+
+/**
+ * Cookies scoped to `southbag.cc` are rejected outright by the browser when you
+ * are on localhost, which silently breaks every login on the dev server. Only
+ * share cookies across subdomains when we are actually on one.
+ */
+const isSouthbagOrigin = (() => {
+  try {
+    const { hostname } = new URL(env.ORIGIN);
+    return hostname === COOKIE_DOMAIN || hostname.endsWith(`.${COOKIE_DOMAIN}`);
+  } catch {
+    return false;
+  }
+})();
 
 const authConfig = {
   appName: "Southbag Identity™",
@@ -18,8 +35,8 @@ const authConfig = {
   trustedOrigins: [...TRUSTED_ORIGINS],
   advanced: {
     crossSubDomainCookies: {
-      enabled: true,
-      domain: "southbag.cc",
+      enabled: isSouthbagOrigin,
+      domain: COOKIE_DOMAIN,
     },
   },
   emailAndPassword: {
@@ -59,6 +76,7 @@ const authConfig = {
     twoFactor({
       issuer: "Southbag Identity™",
     }),
+    southbagId(),
     openAPI(),
   ],
 } satisfies Omit<Parameters<typeof betterAuth>[0], "database" | "plugins"> & {
