@@ -57,7 +57,8 @@ const authConfig = {
     oauthProvider({
       loginPage: "/login",
       consentPage: "/consent",
-      allowDynamicClientRegistration: false,
+      allowDynamicClientRegistration: true,
+      allowUnauthenticatedClientRegistration: true,
       allowPlainCodeChallengeMethod: true,
       scopes: [
         "openid",
