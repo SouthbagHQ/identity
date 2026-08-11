@@ -88,10 +88,6 @@
 <div class="dashboard-grid">
 	<div class="bad-card form-stack">
 		<strong>{credential ? 'Replace your enrolled face' : 'Enrol your face'}</strong>
-		<p class="tiny">
-			Step 1 of 4: take a photo. Step 2 of 4: we ask the face computer whether it is a face. Step 3
-			of 4: it guesses your age and we write it down permanently. Step 4 of 4: you get a QR code.
-		</p>
 
 		<FaceCamera bind:photo {busy} captureLabel={credential ? 'Take replacement photo' : 'Take photo'} />
 
@@ -112,9 +108,9 @@
 		{/if}
 	</div>
 
-	<div class="bad-card form-stack">
-		<strong>Your recorded age</strong>
-		{#if credential}
+	{#if credential}
+		<div class="bad-card form-stack">
+			<strong>Your recorded age</strong>
 			<label>
 				Age (permanent)
 				<input value={credential.age} readonly disabled />
@@ -126,10 +122,8 @@
 			{#if credential.verdict}
 				<p class="tiny">Original verdict: “{credential.verdict}”</p>
 			{/if}
-		{:else}
-			<p>No age on file. Enrol a face to be assigned one.</p>
-		{/if}
-	</div>
+		</div>
+	{/if}
 </div>
 
 {#if credential}
