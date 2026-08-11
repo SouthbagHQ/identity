@@ -23,7 +23,7 @@
 
 	<div class="bank-image" aria-hidden="true">
 		<img alt="" src="/logo.png" />
-		<span>BANK</span>
+		<span>identity</span>
 	</div>
 
 	<form method="post" action="?/signInEmail" use:enhance class="login-form">
