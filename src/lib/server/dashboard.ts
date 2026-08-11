@@ -11,7 +11,16 @@ import {
 } from '$lib/server/db/schema';
 
 const serializeDate = (date: Date | null | undefined) => date?.toISOString() ?? null;
-const serializeList = (value: unknown) => (Array.isArray(value) ? value.join(' ') : '');
+const serializeList = (value: unknown) => {
+	for (let i = 0; i < 2 && typeof value === 'string'; i++) {
+		try {
+			value = JSON.parse(value);
+		} catch {
+			break;
+		}
+	}
+	return Array.isArray(value) ? value.join(' ') : '';
+};
 
 const cleanRedirects = (value: FormDataEntryValue | null) =>
 	(value?.toString() ?? '')
@@ -72,6 +81,7 @@ export const getAuthorizedApps = async (event: RequestEvent) => {
 			updatedAt: oauthConsent.updatedAt,
 			name: oauthClient.name,
 			icon: oauthClient.icon,
+			uri: oauthClient.uri,
 			redirectUris: oauthClient.redirectUris,
 			trusted: southbagAppTrust.trusted,
 			memo: southbagAppTrust.memo
@@ -86,6 +96,7 @@ export const getAuthorizedApps = async (event: RequestEvent) => {
 		...row,
 		scopes: serializeList(row.scopes),
 		redirectUrls: serializeList(row.redirectUris),
+		uri: row.uri ?? '',
 		createdAt: serializeDate(row.createdAt),
 		updatedAt: serializeDate(row.updatedAt)
 	}));
@@ -230,7 +241,7 @@ export const updateApp = async (event: RequestEvent) => {
 			name,
 			uri,
 			icon,
-			redirectUris: redirectUrls,
+			redirectUris: JSON.stringify(redirectUrls),
 			updatedAt: new Date()
 		})
 		.where(eq(oauthClient.clientId, clientId));

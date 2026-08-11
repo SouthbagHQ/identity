@@ -9,6 +9,15 @@
 			.map((scope) => scope.trim())
 			.filter(Boolean)
 			.join(', ');
+
+	const appUrl = (redirectUrls: string) => {
+		try {
+			const host = new URL(redirectUrls.split(/\s|,/)[0]).host;
+			return host ? `https://${host}/` : '/home';
+		} catch {
+			return '/home';
+		}
+	};
 </script>
 
 <svelte:head>
@@ -33,7 +42,7 @@
 					<p class="tiny"><strong>scopes:</strong> {formatScopes(app.scopes) || 'none'}</p>
 				</div>
 				<div>
-					<a class="button-link" href={app.redirectUrls.split(/\s|,/)[0] || '/home'}>Open</a>
+					<a class="button-link" href={appUrl(app.redirectUrls)}>Open</a>
 				</div>
 			</article>
 		{:else}
