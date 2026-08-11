@@ -11,6 +11,7 @@ import { TRUSTED_ORIGINS } from "$lib/server/cors";
 import { hashPassword, verifyPassword } from "$lib/server/password";
 import { southbagTrustPlugin } from "$lib/server/plugins/southbag-trust";
 import { southbagId } from "$lib/server/plugins/southbag-id";
+import { CODE_CLIENT_ID, OFFICE_CLIENT_ID } from "$lib/server/declared-apps";
 
 const COOKIE_DOMAIN = "southbag.cc";
 
@@ -57,6 +58,7 @@ const authConfig = {
     oauthProvider({
       loginPage: "/login",
       consentPage: "/consent",
+      cachedTrustedClients: new Set([OFFICE_CLIENT_ID, CODE_CLIENT_ID]),
       allowDynamicClientRegistration: false,
       allowPlainCodeChallengeMethod: true,
       scopes: [
