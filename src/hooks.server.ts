@@ -3,17 +3,9 @@ import { building } from '$app/environment';
 import { createAuth } from '$lib/server/auth';
 import { corsHeaders, withCors } from '$lib/server/cors';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
-import { env } from '$env/dynamic/private';
-import { syncDeclaredApps } from '$lib/server/declared-apps';
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {
 	if (!event.platform?.env?.DB) throw new Error('D1 binding "DB" not found - are you running with wrangler?');
-	if (env.SOUTHBAG_OFFICE_CLIENT_SECRET || env.SOUTHBAG_CODE_CLIENT_SECRET) {
-		await syncDeclaredApps(event.platform.env.DB, {
-			office: env.SOUTHBAG_OFFICE_CLIENT_SECRET,
-			code: env.SOUTHBAG_CODE_CLIENT_SECRET
-		});
-	}
 
 	event.locals.auth = createAuth(event.platform.env.DB);
 
