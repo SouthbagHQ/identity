@@ -59,7 +59,8 @@ const authConfig = {
       loginPage: "/login",
       consentPage: "/consent",
       cachedTrustedClients: new Set([OFFICE_CLIENT_ID, CODE_CLIENT_ID]),
-      allowDynamicClientRegistration: false,
+      allowDynamicClientRegistration: true,
+      allowUnauthenticatedClientRegistration: true,
       allowPlainCodeChallengeMethod: true,
       scopes: [
         "openid",
