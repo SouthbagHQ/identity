@@ -99,8 +99,6 @@
 			<button type="button" onclick={() => (faceId = '')} disabled={busy}>Scan a different code</button>
 		</div>
 	{:else}
-		<p class="tiny">Hold your Southbag ID™ QR code up to the camera. Any camera. Preferably yours.</p>
-
 		<!-- svelte-ignore a11y_media_has_caption -->
 		<video class="qr-feed" bind:this={videoEl} playsinline muted autoplay hidden={!stream}></video>
 
@@ -152,5 +150,6 @@
 		place-items: center;
 		min-height: 180px;
 		font-size: 0.9rem;
+		transform: none;
 	}
 </style>

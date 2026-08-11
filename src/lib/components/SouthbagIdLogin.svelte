@@ -82,10 +82,6 @@
 				<p class="bad-panel">{message}</p>
 			{/if}
 
-			<p class="tiny">
-				No Southbag ID™ yet? Log in the boring way below, then visit Southbag ID™ in the sidebar to
-				photograph yourself.
-			</p>
 		</div>
 	{/if}
 </section>
