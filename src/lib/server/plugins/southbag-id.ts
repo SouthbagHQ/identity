@@ -29,7 +29,7 @@ const photoSchema = z
 
 type FaceCheck = {
 	isFace: boolean;
-	age: number;
+	dateOfBirth: string;
 	confidence: number;
 	notes: string;
 };
@@ -47,20 +47,20 @@ const FACE_CHECK_SCHEMA = {
 			type: 'boolean',
 			description: 'True only if the image clearly contains a single human face.'
 		},
-		age: {
-			type: 'integer',
-			description: 'Best estimate of the age of the person in whole years. Use 0 if no face.'
+		dateOfBirth: {
+			type: 'string',
+			description: 'Best estimated date of birth in YYYY-MM-DD format. Use 1900-01-01 if no face.'
 		},
 		confidence: {
 			type: 'number',
-			description: 'Confidence in the age estimate, between 0 and 1.'
+			description: 'Confidence in the date-of-birth estimate, between 0 and 1.'
 		},
 		notes: {
 			type: 'string',
 			description: 'One short sentence explaining the verdict.'
 		}
 	},
-	required: ['isFace', 'age', 'confidence', 'notes'],
+	required: ['isFace', 'dateOfBirth', 'confidence', 'notes'],
 	additionalProperties: false
 };
 
@@ -88,8 +88,8 @@ const FACE_CHECK_PROMPT = [
 	'You are the enrolment camera for a bank called Southbag.',
 	'Look at the attached image.',
 	'Decide whether it contains exactly one clearly visible human face.',
-	'If it does, estimate that person’s age in whole years.',
-	'If there is no face, or the face is a drawing, animal, statue, or object, set isFace to false and age to 0.',
+	'If it does, estimate that person’s date of birth in YYYY-MM-DD format.',
+	'If there is no face, or the face is a drawing, animal, statue, or object, set isFace to false and dateOfBirth to 1900-01-01.',
 	'Answer only with the JSON object described by the schema.'
 ].join(' ');
 
@@ -108,7 +108,7 @@ type SouthbagIdCredentialRow = {
 	userId: string;
 	faceId: string;
 	photo: string;
-	age: number;
+	dateOfBirth: string;
 	verdict: string | null;
 	createdAt: Date;
 	updatedAt: Date;
@@ -116,7 +116,7 @@ type SouthbagIdCredentialRow = {
 
 const publicCredential = (row: SouthbagIdCredentialRow) => ({
 	faceId: row.faceId,
-	age: row.age,
+	dateOfBirth: row.dateOfBirth,
 	verdict: row.verdict,
 	photo: row.photo,
 	createdAt: row.createdAt,
@@ -139,7 +139,7 @@ export const southbagId = () =>
 					},
 					faceId: { type: 'string', required: true, unique: true },
 					photo: { type: 'string', required: true },
-					age: { type: 'number', required: true },
+					dateOfBirth: { type: 'string', required: true },
 					verdict: { type: 'string', required: false },
 					createdAt: { type: 'date', required: true },
 					updatedAt: { type: 'date', required: true }
@@ -148,7 +148,7 @@ export const southbagId = () =>
 		},
 		endpoints: {
 			/**
-			 * Enrolment step 2 + 3: send the photo to the face computer, keep the age forever.
+			 * Send the photo to the face computer and record its estimated date of birth.
 			 */
 			enrolSouthbagId: createAuthEndpoint(
 				'/southbag-id/enrol',
@@ -196,7 +196,7 @@ export const southbagId = () =>
 
 					const now = new Date();
 
-					// The age is recorded once and is never negotiable again.
+					// The estimated date of birth is recorded once.
 					if (existing) {
 						const updated = (await ctx.context.adapter.update({
 							model: 'southbagIdCredential',
@@ -210,8 +210,7 @@ export const southbagId = () =>
 
 						return ctx.json({
 							...publicCredential(updated ?? { ...existing, photo: ctx.body.photo, updatedAt: now }),
-							estimatedAge: check.age,
-							ageLocked: true,
+							estimatedDateOfBirth: check.dateOfBirth,
 							notes: check.notes ?? ''
 						});
 					}
@@ -222,7 +221,7 @@ export const southbagId = () =>
 							userId: user.id,
 							faceId: crypto.randomUUID(),
 							photo: ctx.body.photo,
-							age: Math.max(0, Math.round(check.age)),
+							dateOfBirth: check.dateOfBirth,
 							verdict: check.notes ?? '',
 							createdAt: now,
 							updatedAt: now
@@ -231,8 +230,7 @@ export const southbagId = () =>
 
 					return ctx.json({
 						...publicCredential(created),
-						estimatedAge: created.age,
-						ageLocked: true,
+						estimatedDateOfBirth: created.dateOfBirth,
 						notes: check.notes ?? ''
 					});
 				}
@@ -262,7 +260,7 @@ export const southbagId = () =>
 			),
 
 			/**
-			 * Remove the face. The age goes with it, which is the only known way to change it.
+			 * Remove the enrolled face and its estimated date of birth.
 			 */
 			forgetSouthbagId: createAuthEndpoint(
 				'/southbag-id/forget',

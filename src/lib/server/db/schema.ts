@@ -22,7 +22,7 @@ export const southbagAppTrust = sqliteTable('southbag_app_trust', {
 });
 
 /**
- * Southbag ID™ face vault. One face per customer, age recorded once and never again.
+ * Southbag ID™ face vault. One face and estimated date of birth per customer.
  */
 export const southbagIdCredential = sqliteTable(
 	'southbag_id_credential',
@@ -33,7 +33,7 @@ export const southbagIdCredential = sqliteTable(
 			.references(() => user.id, { onDelete: 'cascade' }),
 		faceId: text('face_id').notNull().unique(),
 		photo: text('photo').notNull(),
-		age: integer('age').notNull(),
+		dateOfBirth: text('date_of_birth').notNull(),
 		verdict: text('verdict'),
 		createdAt: integer('created_at', { mode: 'timestamp_ms' })
 			.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)

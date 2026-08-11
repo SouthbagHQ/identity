@@ -10,7 +10,6 @@
 	let photo = $state<string | null>(null);
 	let busy = $state(false);
 	let message = $state('');
-	let notes = $state('');
 
 	const credential = $derived(data.credential.enrolled ? data.credential : null);
 	const qrSvg = $derived(credential ? renderQrSvg(toQrPayload(credential.faceId)) : '');
@@ -31,9 +30,8 @@
 
 		busy = true;
 		message = 'Sending your face to the face computer…';
-		notes = '';
 
-		const { data: result, error } = await authClient.southbagId.enrol({ photo });
+		const { error } = await authClient.southbagId.enrol({ photo });
 
 		busy = false;
 
@@ -43,22 +41,21 @@
 		}
 
 		photo = null;
-		notes = result?.notes ?? '';
-		message = result?.age === result?.estimatedAge
-			? `Face accepted. Your age is ${result?.age} and that is final.`
-			: `Face updated. Your age stays at ${result?.age} (the face computer guessed ${result?.estimatedAge} this time, but ages are not editable).`;
+		message = 'Face accepted.';
 
 		await invalidateAll();
 	};
 
-	const forget = async () => {
+	const deleteFace = async () => {
 		busy = true;
-		message = 'Removing your face…';
-		await authClient.southbagId.forget();
+		message = 'Deleting your face…';
+		const { error } = await authClient.southbagId.forget();
 		busy = false;
-		photo = null;
-		notes = '';
-		message = 'Your face has been removed. Your age went with it.';
+		if (error) {
+			message = error.message || 'Could not delete your face.';
+			return;
+		}
+		message = 'Your face has been deleted.';
 		await invalidateAll();
 	};
 
@@ -78,8 +75,8 @@
 		<h1>Southbag ID™</h1>
 		<p>
 			Southbag ID™ is the fastest, safest 🔒 and most personal way to prove that your face is
-			your face 😀. Simply photograph your own head, let our award-winning 🏆 face computer estimate
-			how old you are, and receive a permanent QR code you can use to sign in from any device with
+				your face 😀. Simply photograph your own head, let our award-winning 🏆 face computer estimate
+				your date of birth, and receive a permanent QR code you can use to sign in from any device with
 			a camera 📷, anywhere, forever, without ever remembering a password again ✨.
 		</p>
 	</div>
@@ -87,41 +84,37 @@
 
 <div class="dashboard-grid">
 	<div class="bad-card form-stack">
-		<strong>{credential ? 'Replace your enrolled face' : 'Enrol your face'}</strong>
-
-		<FaceCamera bind:photo {busy} captureLabel={credential ? 'Take replacement photo' : 'Take photo'} />
-
-		<div class="button-row">
-			<button type="button" class="btn-large" onclick={enrol} disabled={!photo || busy}>
-				{busy ? 'Consulting the face computer…' : credential ? 'Replace my face' : 'Enrol my face'}
+		{#if credential}
+			<strong>Your enrolled face</strong>
+			<p>If you want to replace your face, <a href="https://support.southbag.cc/ai">contact a human</a>.</p>
+			<button type="button" onclick={deleteFace} disabled={busy}>
+				{busy ? 'Deleting…' : 'Delete my face'}
 			</button>
-			{#if credential}
-				<button type="button" onclick={forget} disabled={busy}>Forget my face</button>
-			{/if}
-		</div>
+		{:else}
+			<strong>Enrol your face</strong>
+			<FaceCamera bind:photo {busy} captureLabel="Take photo" />
+			<div class="button-row">
+				<button type="button" class="btn-large" onclick={enrol} disabled={!photo || busy}>
+					{busy ? 'Consulting the face computer…' : 'Enrol my face'}
+				</button>
+			</div>
+		{/if}
 
 		{#if message}
 			<p class="bad-panel">{message}</p>
-		{/if}
-		{#if notes}
-			<p class="tiny">Face computer remarks: “{notes}”</p>
 		{/if}
 	</div>
 
 	{#if credential}
 		<div class="bad-card form-stack">
-			<strong>Your recorded age</strong>
+			<strong>Your recorded date of birth</strong>
 			<label>
-				Age (permanent)
-				<input value={credential.age} readonly disabled />
+				Date of birth
+				<input value={credential.dateOfBirth} readonly disabled />
 			</label>
 			<p class="tiny">
-				This number was decided by a photograph and cannot be changed by you, us, or the passage of
-				time. Recorded {formatDate(credential.createdAt)}.
+				This date was estimated from your photograph. Recorded {formatDate(credential.createdAt)}.
 			</p>
-			{#if credential.verdict}
-				<p class="tiny">Original verdict: “{credential.verdict}”</p>
-			{/if}
 		</div>
 	{/if}
 </div>
@@ -129,19 +122,13 @@
 {#if credential}
 	<div class="bad-panel">
 		<strong>Your Southbag ID™ sign-in code</strong>
-		<p class="tiny">
-			Present this QR code to the “Sign in with Southbag ID™” button on the login page, then show it
-			your face. Screenshot it, print it, laminate it, tattoo it.
-		</p>
 		<div class="qr-row">
 			<div class="qr-holder">
 				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 				{@html qrSvg}
 			</div>
 			<div class="form-stack">
-				<img class="face-on-file" alt="You, as held on file by Southbag" src={credential.photo} />
-				<p class="tiny">Face id: {credential.faceId}</p>
-				<p class="tiny">Last updated {formatDate(credential.updatedAt)}</p>
+				<p class="tiny">Your id: {credential.faceId}</p>
 				<div class="button-row">
 					<button type="button" onclick={copyCode}>Copy code</button>
 				</div>
@@ -163,18 +150,12 @@
 		width: min(260px, 70vw);
 		border: 3px ridge #ccc;
 		background: #fff;
-		transform: rotate(-1deg);
+		transform: none;
 	}
 
 	.qr-holder :global(svg) {
 		display: block;
 		width: 100%;
 		height: auto;
-	}
-
-	.face-on-file {
-		width: 140px;
-		border: 3px ridge #ccc;
-		transform: rotate(2deg);
 	}
 </style>

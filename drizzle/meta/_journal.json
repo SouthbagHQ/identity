@@ -36,6 +36,13 @@
       "when": 1785228628703,
       "tag": "0004_puzzling_madelyne_pryor",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1786491920857,
+      "tag": "0005_striped_namor",
+      "breakpoints": true
     }
   ]
 }
