@@ -33,7 +33,7 @@
 					<p class="tiny"><strong>scopes:</strong> {formatScopes(app.scopes) || 'none'}</p>
 				</div>
 				<div>
-					<a class="button-link" href={app.redirectUrls.split(/\s|,/)[0] || '/home'}>Open</a>
+					<a class="button-link" href={app.uri || app.redirectUrls.split(/\s|,/)[0] || '/home'}>Open</a>
 				</div>
 			</article>
 		{:else}
