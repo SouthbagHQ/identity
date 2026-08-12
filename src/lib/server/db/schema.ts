@@ -46,4 +46,14 @@ export const southbagIdCredential = sqliteTable(
 	(table) => [index('southbag_id_credential_userId_idx').on(table.userId)]
 );
 
+export const southbagIdWalletPass = sqliteTable('southbag_id_wallet_pass', {
+	userId: text('user_id')
+		.primaryKey()
+		.references(() => user.id, { onDelete: 'cascade' }),
+	shareUrl: text('share_url'),
+	createdAt: integer('created_at', { mode: 'timestamp_ms' })
+		.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+		.notNull()
+});
+
 export * from './auth.schema';

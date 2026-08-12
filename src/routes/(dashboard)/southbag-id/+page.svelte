@@ -5,7 +5,7 @@
 	import { renderQrSvg, toQrPayload } from '$lib/qr';
 	import type { PageServerData } from './$types';
 
-	let { data }: { data: PageServerData } = $props();
+	let { data, form } = $props();
 
 	let photo = $state<string | null>(null);
 	let busy = $state(false);
@@ -131,7 +131,11 @@
 				<p class="tiny">Your id: {credential.faceId}</p>
 				<div class="button-row">
 					<button type="button" onclick={copyCode}>Copy code</button>
+					<form method="POST" action="?/wallet">
+						<button type="submit">Add to Apple or Google Wallet</button>
+					</form>
 				</div>
+				{#if form?.walletError}<p class="tiny">{form.walletError}</p>{/if}
 			</div>
 		</div>
 	</div>
