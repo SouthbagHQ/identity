@@ -16,6 +16,7 @@ declare global {
 		interface Platform {
 			env: {
 				DB: D1Database;
+				WALLETWALLET_API_KEY?: string;
 			};
 		}
 		// interface PageState {}
