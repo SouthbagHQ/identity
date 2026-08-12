@@ -3,8 +3,10 @@ import { and, desc, eq } from 'drizzle-orm';
 import { getDb } from '$lib/server/db';
 import {
 	account,
+	oauthAccessToken,
 	oauthClient,
 	oauthConsent,
+	oauthRefreshToken,
 	session,
 	southbagAppTrust,
 	user
@@ -177,6 +179,24 @@ export const getAccountProfile = async (event: RequestEvent) => {
 export const signOut = async (event: RequestEvent) => {
 	await event.locals.auth.api.signOut({ headers: event.request.headers });
 	redirect(302, '/login');
+};
+
+export const revokeConsent = async (event: RequestEvent) => {
+	if (!event.locals.user) return fail(401, { message: 'Login first.' });
+
+	const clientId = (await event.request.formData()).get('clientId')?.toString();
+	if (!clientId) return fail(400, { message: 'No client id.' });
+
+	const db = getDb(event.platform!.env.DB);
+	const owner = and(eq(oauthConsent.clientId, clientId), eq(oauthConsent.userId, event.locals.user.id));
+	const tokens = and(eq(oauthAccessToken.clientId, clientId), eq(oauthAccessToken.userId, event.locals.user.id));
+	const refreshTokens = and(eq(oauthRefreshToken.clientId, clientId), eq(oauthRefreshToken.userId, event.locals.user.id));
+
+	await db.delete(oauthAccessToken).where(tokens);
+	await db.delete(oauthRefreshToken).where(refreshTokens);
+	await db.delete(oauthConsent).where(owner);
+
+	return { message: 'Consent revoked.' };
 };
 
 export const createApp = async (event: RequestEvent) => {
