@@ -1,5 +1,5 @@
 import type { Actions, PageServerLoad } from './$types';
-import { getAuthorizedApps, getOrigin, signOut } from '$lib/server/dashboard';
+import { getAuthorizedApps, getOrigin, revokeConsent, signOut } from '$lib/server/dashboard';
 
 export const load: PageServerLoad = async (event) => ({
 	authorizedApps: await getAuthorizedApps(event),
@@ -7,5 +7,6 @@ export const load: PageServerLoad = async (event) => ({
 });
 
 export const actions: Actions = {
+	revokeConsent,
 	signOut
 };

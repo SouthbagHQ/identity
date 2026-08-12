@@ -41,8 +41,12 @@
 					<p class="tiny"><strong>client_id:</strong> {app.clientId}</p>
 					<p class="tiny"><strong>scopes:</strong> {formatScopes(app.scopes) || 'none'}</p>
 				</div>
-				<div>
+				<div class="app-actions">
 					<a class="button-link" href={appUrl(app.redirectUrls)}>Open</a>
+					<form method="POST" action="?/revokeConsent">
+						<input type="hidden" name="clientId" value={app.clientId} />
+						<button>Revoke</button>
+					</form>
 				</div>
 			</article>
 		{:else}

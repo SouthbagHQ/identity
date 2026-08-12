@@ -317,6 +317,11 @@ label,
     inset 0 0 5px rgb(255 255 255 / 30%) !important;
 }
 
+.app-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .tiny {
   font-size: 0.78rem;
   overflow-wrap: anywhere;
