@@ -11,7 +11,9 @@
 
 	const consent = async (accept: boolean) => {
 		busy = true;
-		message = accept ? 'Authorising through several suspicious layers...' : 'Denying, but dramatically...';
+		if (!accept) {
+			message = 'Denying, but dramatically...';
+		}
 
 		const response = await fetch('/api/auth/oauth2/consent', {
 			method: 'POST',
@@ -54,7 +56,7 @@
 	<header class="plain-header">
 		<img class="logo-box" alt="Southbag Identity™ Logo" src="/logo.png" />
 		<div>
-			<h1>Consent???</h1>
+			<h1 class="consent-heading">Allow this app to access your account according to the scopes it has requested</h1>
 		</div>
 		<a class="button-link" href="/">Backend</a>
 	</header>
@@ -65,15 +67,14 @@
 			<p class="tiny"><strong>client_id:</strong> {data.clientId}</p>
 			<p class="tiny"><strong>redirects:</strong> {data.app?.redirectUrls || 'unknown, which is normal'}</p>
 			<p><strong>Scopes:</strong> {data.scope || 'openid, probably'}</p>
-			<p>{data.app?.memo || 'No backend memo. That is basically a memo.'}</p>
 
 			{#if !data.isTrusted}
 				<p>Before continuing, Southbag requires ten blocking browser dialogues. This makes the app safer by making the user tired.</p>
 			{/if}
 
 			<div class="button-row">
-				<button disabled={busy || data.isTrusted} onclick={runUntrustedGauntlet}>Accept After 10 Dialogues</button>
-				<button disabled={busy} onclick={() => consent(false)}>Deny, maybe</button>
+				<button disabled={busy || data.isTrusted} onclick={runUntrustedGauntlet}>Accept</button>
+				<button disabled={busy} onclick={() => consent(false)}>Deny</button>
 			</div>
 			<p>{message}</p>
 		</div>
