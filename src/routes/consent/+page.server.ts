@@ -21,8 +21,7 @@ export const load: PageServerLoad = async (event) => {
 					clientId: oauthClient.clientId,
 					name: oauthClient.name,
 					redirectUris: oauthClient.redirectUris,
-					trusted: southbagAppTrust.trusted,
-					memo: southbagAppTrust.memo
+					trusted: southbagAppTrust.trusted
 				})
 				.from(oauthClient)
 				.leftJoin(southbagAppTrust, eq(oauthClient.clientId, southbagAppTrust.clientId))

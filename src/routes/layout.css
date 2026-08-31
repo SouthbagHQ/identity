@@ -134,6 +134,10 @@ label,
   transform: rotate(-1deg);
 }
 
+.plain-header h1.consent-heading {
+  max-width: 22ch;
+}
+
 .plain-header h2,
 .sidebar h2 {
   margin: 0;
