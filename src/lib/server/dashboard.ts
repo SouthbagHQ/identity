@@ -11,6 +11,7 @@ import {
 	southbagAppTrust,
 	user
 } from '$lib/server/db/schema';
+import { syncFirstPartySkipConsent } from '$lib/server/plugins/southbag-trust';
 
 const serializeDate = (date: Date | null | undefined) => date?.toISOString() ?? null;
 const serializeList = (value: unknown) => {
@@ -265,6 +266,8 @@ export const updateApp = async (event: RequestEvent) => {
 			updatedAt: new Date()
 		})
 		.where(eq(oauthClient.clientId, clientId));
+
+	await syncFirstPartySkipConsent(event.platform!.env.DB, clientId);
 
 	return { message: `Updated ${name}.` };
 };
