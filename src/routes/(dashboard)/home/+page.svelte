@@ -11,14 +11,16 @@
 			.join(', ');
 
 	/**
-	 * First-party apps. Each link goes straight to the app's OAuth start route,
-	 * so an Identity session here signs the user in there without a landing page.
+	 * First-party apps. Links go straight to each app's OAuth start route, so an
+	 * Identity session here signs the user in there without a landing page.
+	 * Branch Locator has no sign-in, so it just opens.
 	 */
 	const southbagApps = [
-		{ name: 'Southbag Online Banking', description: 'Accounts, transfers, loans, and fees.', href: 'https://banking.southbag.cc/auth/login' },
-		{ name: 'Southbag Drive™', description: '100MB of storage.', href: 'https://drive.southbag.cc/auth/login' },
-		{ name: 'Southbag Office™', description: 'Docs, Slides, and Sheets.', href: 'https://office.southbag.cc/auth/login' },
-		{ name: 'Southbag Code', description: 'Usage and account for the coding agent.', href: 'https://code.southbag.cc/auth/login?return_to=/account' }
+		{ name: 'Southbag Online Banking', href: 'https://banking.southbag.cc/auth/login' },
+		{ name: 'Southbag Drive™', href: 'https://drive.southbag.cc/auth/login' },
+		{ name: 'Southbag Office™', href: 'https://office.southbag.cc/auth/login' },
+		{ name: 'Southbag Code', href: 'https://code.southbag.cc/auth/login?return_to=/account' },
+		{ name: 'Branch Locator', href: 'https://branch-locator.southbag.cc/' }
 	];
 
 	const appUrl = (redirectUrls: string) => {
@@ -44,17 +46,9 @@
 
 <div class="bad-panel">
 	<strong>Southbag apps</strong>
-	<div class="app-list">
+	<div class="app-grid">
 		{#each southbagApps as app}
-			<article class="app-row">
-				<div>
-					<strong>{app.name}</strong>
-					<p class="tiny">{app.description}</p>
-				</div>
-				<div class="app-actions">
-					<a class="button-link" href={app.href}>Open</a>
-				</div>
-			</article>
+			<a class="app-card" href={app.href}>{app.name}</a>
 		{/each}
 	</div>
 </div>
