@@ -10,6 +10,17 @@
 			.filter(Boolean)
 			.join(', ');
 
+	/**
+	 * First-party apps. Each link goes straight to the app's OAuth start route,
+	 * so an Identity session here signs the user in there without a landing page.
+	 */
+	const southbagApps = [
+		{ name: 'Southbag Online Banking', description: 'Accounts, transfers, loans, and fees.', href: 'https://banking.southbag.cc/auth/login' },
+		{ name: 'Southbag Drive™', description: '100MB of storage.', href: 'https://drive.southbag.cc/auth/login' },
+		{ name: 'Southbag Office™', description: 'Docs, Slides, and Sheets.', href: 'https://office.southbag.cc/auth/login' },
+		{ name: 'Southbag Code', description: 'Usage and account for the coding agent.', href: 'https://code.southbag.cc/auth/login?return_to=/account' }
+	];
+
 	const appUrl = (redirectUrls: string) => {
 		try {
 			const host = new URL(redirectUrls.split(/\s|,/)[0]).host;
@@ -32,7 +43,24 @@
 </header>
 
 <div class="bad-panel">
-	<strong>Your apps</strong>
+	<strong>Southbag apps</strong>
+	<div class="app-list">
+		{#each southbagApps as app}
+			<article class="app-row">
+				<div>
+					<strong>{app.name}</strong>
+					<p class="tiny">{app.description}</p>
+				</div>
+				<div class="app-actions">
+					<a class="button-link" href={app.href}>Open</a>
+				</div>
+			</article>
+		{/each}
+	</div>
+</div>
+
+<div class="bad-panel">
+	<strong>3rd party apps</strong>
 	<div class="app-list">
 		{#each data.authorizedApps as app}
 			<article class="app-row">
@@ -50,7 +78,7 @@
 				</div>
 			</article>
 		{:else}
-			<p>No authorized apps yet.</p>
+			<p>No 3rd party apps yet.</p>
 		{/each}
 	</div>
 </div>
