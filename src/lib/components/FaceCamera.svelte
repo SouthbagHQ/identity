@@ -8,7 +8,7 @@
 
 	let {
 		photo = $bindable<string | null>(null),
-		hint = 'Put your face inside the rectangle. Do not put anyone else in there.',
+		hint = 'Put your face inside the rectangle',
 		captureLabel = 'Take photo',
 		busy = false
 	}: Props = $props();
@@ -114,7 +114,7 @@
 				<button type="button" onclick={stopCamera} disabled={busy}>Turn camera off</button>
 			{:else}
 				<button type="button" class="btn-large" onclick={startCamera} disabled={starting || busy}>
-					{starting ? 'Waking the camera…' : 'Turn camera on'}
+					{starting ? 'The camera is loading' : 'Turn camera on'}
 				</button>
 			{/if}
 		</div>

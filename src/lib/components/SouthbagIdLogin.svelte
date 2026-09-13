@@ -25,14 +25,14 @@
 		if (!faceId || !photo) return;
 
 		busy = true;
-		message = 'Comparing your face with the face on file…';
+		message = 'Verifying your face';
 
 		const { data, error } = await authClient.signIn.southbagId({ faceId, photo });
 
 		busy = false;
 
 		if (error) {
-			message = error.message || 'The face computer says you are not you.';
+			message = error.message || 'You are not you';
 			photo = null;
 			return;
 		}
@@ -52,17 +52,17 @@
 				if (!open) reset();
 			}}
 		>
-			{open ? 'Hide Southbag ID™' : 'Sign in with Southbag ID™ (your face)'}
+			{open ? 'Close Southbag ID™' : 'Sign in with Southbag ID™'}
 		</button>
 	</div>
 
 	{#if open}
 		<div class="bad-panel form-stack">
-			<strong>Step 1 — scan your Southbag ID™ QR code</strong>
+			<strong>Scan your Southbag ID™</strong>
 			<QrScanner bind:faceId {busy} />
 
 			{#if faceId}
-				<strong>Step 2 — show us the face that goes with it</strong>
+				<strong>Verify your face</strong>
 				<FaceCamera
 					bind:photo
 					{busy}
@@ -72,7 +72,7 @@
 
 				<div class="button-row">
 					<button type="button" class="btn-large" onclick={signIn} disabled={!photo || busy}>
-						{busy ? 'Checking your face…' : 'Sign in with this face'}
+						{busy ? 'Verifying your face' : 'Sign in'}
 					</button>
 					<button type="button" onclick={reset} disabled={busy}>Start over</button>
 				</div>

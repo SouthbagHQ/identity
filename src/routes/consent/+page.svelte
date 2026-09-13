@@ -7,12 +7,12 @@
 	let busy = $state(false);
 	let message = $state('');
 
-	const warnings = Array.from({ length: 10 }, (_, index) => `Southbag Untrusted App Warning ${index + 1}: this application might do financial stuff.`);
+	const warnings = Array.from({ length: 10 }, (_, index) => `Southbag Untrusted App Warning ${index + 1}`);
 
 	const consent = async (accept: boolean) => {
 		busy = true;
 		if (!accept) {
-			message = 'Denying, but dramatically...';
+			message = 'Denying';
 		}
 
 		const response = await fetch('/api/auth/oauth2/consent', {
@@ -69,7 +69,7 @@
 			<p><strong>Scopes:</strong> {data.scope || 'openid, probably'}</p>
 
 			{#if !data.isTrusted}
-				<p>Before continuing, Southbag requires ten blocking browser dialogues. This makes the app safer by making the user tired.</p>
+				<p>Before continuing, Southbag requires ten dialogues. This makes the app safer by making the user tired.</p>
 			{/if}
 
 			<div class="button-row">
@@ -80,7 +80,7 @@
 		</div>
 
 		<aside class="bad-card">
-			<strong>Dialogue Counter</strong>
+			<strong>Dialogs:</strong>
 			<p>{warningCount}/10</p>
 		</aside>
 	</section>

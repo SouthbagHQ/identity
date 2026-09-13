@@ -24,24 +24,24 @@
 
 	const enrol = async () => {
 		if (!photo) {
-			message = 'Take a photo first. That is the whole feature.';
+			message = 'Take a photo';
 			return;
 		}
 
 		busy = true;
-		message = 'Sending your face to the face computer…';
+		message = 'Processing your face';
 
 		const { error } = await authClient.southbagId.enrol({ photo });
 
 		busy = false;
 
 		if (error) {
-			message = error.message || 'The face computer rejected your face.';
+			message = error.message || 'That isn\'t a face';
 			return;
 		}
 
 		photo = null;
-		message = 'Face accepted.';
+		message = 'Face saved';
 
 		await invalidateAll();
 	};
@@ -62,7 +62,7 @@
 	const copyCode = async () => {
 		if (!credential) return;
 		await navigator.clipboard?.writeText(toQrPayload(credential.faceId)).catch(() => {});
-		message = 'Code copied. Do not paste it at anyone.';
+		message = 'Code copied.';
 	};
 </script>
 
@@ -85,7 +85,7 @@
 <div class="dashboard-grid">
 	<div class="bad-card form-stack">
 		{#if credential}
-			<strong>Your enrolled face</strong>
+			<strong>Your face</strong>
 			<p>If you want to replace your face, <a href="https://support.southbag.cc/ai">contact a human</a>.</p>
 			<button type="button" onclick={deleteFace} disabled={busy}>
 				{busy ? 'Deleting…' : 'Delete my face'}
@@ -95,7 +95,7 @@
 			<FaceCamera bind:photo {busy} captureLabel="Take photo" />
 			<div class="button-row">
 				<button type="button" class="btn-large" onclick={enrol} disabled={!photo || busy}>
-					{busy ? 'Consulting the face computer…' : 'Enrol my face'}
+					{busy ? 'Processing...' : 'Enrol my face'}
 				</button>
 			</div>
 		{/if}

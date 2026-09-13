@@ -59,7 +59,7 @@
 		starting = true;
 		try {
 			if (!navigator.mediaDevices?.getUserMedia) {
-				throw new Error('No camera here. Type the code in by hand like it is 1998.');
+				throw new Error('Your device doesn\'t have a camera. Kevin is disappointed in you. Type the code in manually.');
 			}
 			const media = await navigator.mediaDevices.getUserMedia({
 				video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
@@ -111,17 +111,17 @@
 				<button type="button" onclick={stopCamera} disabled={busy}>Stop scanning</button>
 			{:else}
 				<button type="button" class="btn-large" onclick={startCamera} disabled={starting || busy}>
-					{starting ? 'Waking the camera…' : 'Scan QR code'}
+					{starting ? 'The camera is loading' : 'Scan QR code'}
 				</button>
 			{/if}
 		</div>
 
 		<label>
-			Or type the code from under the QR code
+			Type the code
 			<input bind:value={manualEntry} placeholder="southbag-id:…" disabled={busy} />
 		</label>
 		<div class="button-row">
-			<button type="button" onclick={useManualEntry} disabled={busy}>Use typed code</button>
+			<button type="button" onclick={useManualEntry} disabled={busy}>Type your code</button>
 		</div>
 	{/if}
 

@@ -12,7 +12,7 @@
 <header class="plain-header">
 	<div>
 		<h1>New OAuth app</h1>
-		<p>Create a developer app. It will not be trusted by users.</p>
+		<p>Create an app</p>
 	</div>
 </header>
 
@@ -52,6 +52,6 @@
 		<p>Token endpoint:</p>
 		<p class="tiny">{data.origin}/api/auth/oauth2/token</p>
 		<p>Trust:</p>
-		<p class="tiny">New apps are untrusted unless Southbag changes that server-side.</p>
+		<p class="tiny">Apps aren't trusted by Kevin</p>
 	</div>
 </div>

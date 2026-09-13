@@ -24,7 +24,7 @@ const photoSchema = z
 		message: SOUTHBAG_ID_ERROR_CODES.INVALID_PHOTO
 	})
 	.refine((value) => value.length <= MAX_PHOTO_BYTES, {
-		message: 'That photo is far too large. Southbag only has one bag.'
+		message: 'That photo is far too large'
 	});
 
 type FaceCheck = {
