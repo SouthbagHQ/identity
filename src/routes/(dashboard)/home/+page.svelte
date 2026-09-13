@@ -13,14 +13,15 @@
 	/**
 	 * First-party apps. Links go straight to each app's OAuth start route, so an
 	 * Identity session here signs the user in there without a landing page.
-	 * Branch Locator has no sign-in, so it just opens.
+	 * Branch Locator and Support have no sign-in, so they just open.
 	 */
 	const southbagApps = [
 		{ name: 'Southbag Online Banking', href: 'https://banking.southbag.cc/auth/login' },
 		{ name: 'Southbag Drive™', href: 'https://drive.southbag.cc/auth/login' },
 		{ name: 'Southbag Office™', href: 'https://office.southbag.cc/auth/login' },
 		{ name: 'Southbag Code', href: 'https://code.southbag.cc/auth/login?return_to=/account' },
-		{ name: 'Branch Locator', href: 'https://branch-locator.southbag.cc/' }
+		{ name: 'Branch Locator', href: 'https://branch-locator.southbag.cc/' },
+		{ name: 'Southbag Support', href: 'https://support.southbag.cc/' }
 	];
 
 	const appUrl = (redirectUrls: string) => {
@@ -48,7 +49,10 @@
 	<strong>Southbag apps</strong>
 	<div class="app-grid">
 		{#each southbagApps as app}
-			<a class="app-card" href={app.href}>{app.name}</a>
+			<a class="app-card" href={app.href}>
+				<img class="app-logo" alt="" src="/logo.png" />
+				{app.name}
+			</a>
 		{/each}
 	</div>
 </div>
