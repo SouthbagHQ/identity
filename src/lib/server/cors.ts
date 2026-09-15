@@ -2,6 +2,11 @@ export const TRUSTED_ORIGINS = [
 	"https://southbag.cc",
 	"https://www.southbag.cc",
 	"https://identity.southbag.cc",
+	// Southbag Mobile: the app's UI is served from GitHub Pages and the Android
+	// WebView loads it from there, so its OAuth token exchange comes from this origin.
+	"https://southbaghq.github.io",
+	// `cordova run browser`
+	"http://localhost:8000",
 	"http://localhost:4321",
 	"http://127.0.0.1:4321",
 	"http://localhost:5173",
