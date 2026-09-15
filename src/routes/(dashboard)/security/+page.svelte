@@ -155,7 +155,7 @@
 </div>
 
 <div class="bad-panel">
-	<strong>Connected OAuth apps</strong>
+	<strong>Connected apps</strong>
 	<div class="app-list">
 		{#each data.authorizedApps as app}
 			<article class="app-row">
@@ -166,7 +166,7 @@
 				</div>
 			</article>
 		{:else}
-			<p>No connected OAuth apps.</p>
+			<p>No connected apps.</p>
 		{/each}
 	</div>
 </div>

@@ -31,7 +31,7 @@
 	</div>
 
 	<div class="bad-card form-stack">
-		<strong>Create an OAuth app</strong>
+		<strong>Create an app</strong>
 		<a class="button-link" href="/developer/apps/new">Create app</a>
 		<a href="/.well-known/openid-configuration">OIDC Discovery</a>
 		<a href="/.well-known/oauth-authorization-server">OAuth Metadata</a>
@@ -40,7 +40,7 @@
 </div>
 
 <div class="bad-panel">
-	<strong>Your OAuth apps</strong>
+	<strong>Your apps</strong>
 	<div class="app-list">
 		{#each data.apps as app}
 			<article class="app-row">

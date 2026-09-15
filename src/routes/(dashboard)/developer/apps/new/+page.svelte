@@ -6,12 +6,12 @@
 </script>
 
 <svelte:head>
-	<title>Southbag Identity - New OAuth App</title>
+	<title>Southbag Identity - New App</title>
 </svelte:head>
 
 <header class="plain-header">
 	<div>
-		<h1>New OAuth app</h1>
+		<h1>New app</h1>
 		<p>Create an app</p>
 	</div>
 </header>
@@ -22,7 +22,7 @@
 
 <div class="dashboard-grid">
 	<form method="post" action="?/createApp" use:enhance class="bad-card form-stack">
-		<strong>Create OAuth app</strong>
+		<strong>Create app</strong>
 		<label>
 			Application name
 			<input name="name" placeholder="Enter app" required />

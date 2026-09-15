@@ -32,7 +32,7 @@
 		starting = true;
 		try {
 			if (!navigator.mediaDevices?.getUserMedia) {
-				throw new Error('This browser has no camera. Please obtain a browser with a camera.');
+				throw new Error('Your device doesn\'t have a camera.');
 			}
 			const media = await navigator.mediaDevices.getUserMedia({
 				video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
@@ -44,7 +44,7 @@
 				await videoEl.play().catch(() => {});
 			}
 		} catch (error) {
-			cameraError = error instanceof Error ? error.message : 'The camera said no.';
+			cameraError = error instanceof Error ? error.message : 'Camera access was denied.';
 		} finally {
 			starting = false;
 		}
@@ -55,7 +55,7 @@
 		const width = videoEl.videoWidth;
 		const height = videoEl.videoHeight;
 		if (!width || !height) {
-			cameraError = 'The camera is still waking up. Try again in a moment.';
+			cameraError = 'The camera is still loading. Try again in a moment.';
 			return;
 		}
 
@@ -66,7 +66,7 @@
 
 		const context = canvas.getContext('2d');
 		if (!context) {
-			cameraError = 'Could not draw your face onto a canvas.';
+			cameraError = 'Could not capture your face.';
 			return;
 		}
 
@@ -103,7 +103,7 @@
 		></video>
 
 		{#if !stream}
-			<div class="face-placeholder" aria-hidden="true">NO FACE DETECTED YET</div>
+			<div class="face-placeholder" aria-hidden="true">No face detected</div>
 		{/if}
 
 		<div class="button-row">

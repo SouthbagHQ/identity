@@ -72,7 +72,7 @@
 			}
 			frame = requestAnimationFrame(scanFrame);
 		} catch (error) {
-			cameraError = error instanceof Error ? error.message : 'The camera said no.';
+			cameraError = error instanceof Error ? error.message : 'Camera access was denied.';
 		} finally {
 			starting = false;
 		}
@@ -103,7 +103,7 @@
 		<video class="qr-feed" bind:this={videoEl} playsinline muted autoplay hidden={!stream}></video>
 
 		{#if !stream}
-			<div class="qr-placeholder" aria-hidden="true">NO QR CODE DETECTED YET</div>
+			<div class="qr-placeholder" aria-hidden="true">No QR code detected</div>
 		{/if}
 
 		<div class="button-row">

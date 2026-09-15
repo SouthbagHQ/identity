@@ -293,5 +293,5 @@ export const deleteApp = async (event: RequestEvent) => {
 
 	await db.delete(oauthClient).where(eq(oauthClient.clientId, clientId));
 
-	return { message: 'Deleted app. Probably.' };
+	return { message: 'Deleted app.' };
 };

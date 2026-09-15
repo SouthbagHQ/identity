@@ -6,13 +6,13 @@ import { setSessionCookie } from 'better-auth/cookies';
 import { generateJson } from '$lib/server/openrouter';
 
 export const SOUTHBAG_ID_ERROR_CODES = {
-	NOT_A_FACE: 'That is not a face. Southbag Identity™ only accepts faces.',
-	ALREADY_ENROLLED: 'This face is already on file. Faces are forever.',
-	NOT_ENROLLED: 'No face on file. Please enrol a face first.',
-	UNKNOWN_FACE_ID: 'That Southbag ID™ code is not in the face vault.',
-	FACE_MISMATCH: 'The faces do not match. You are not you.',
+	NOT_A_FACE: 'That isn\'t a face',
+	ALREADY_ENROLLED: 'This face is already on file.',
+	NOT_ENROLLED: 'No face on file. Enrol your face first.',
+	UNKNOWN_FACE_ID: 'That Southbag ID™ code is not on file.',
+	FACE_MISMATCH: 'You are not you',
 	INVALID_PHOTO: 'That photo is not a photo.',
-	VISION_FAILED: 'The face computer is unavailable. Please look at a wall and try again.'
+	VISION_FAILED: 'Face verification is unavailable. Please try again later.'
 } as const;
 
 const MAX_PHOTO_BYTES = 900_000;

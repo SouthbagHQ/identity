@@ -28,7 +28,7 @@
 			return;
 		}
 
-		message = payload?.message || 'Consent endpoint did not know what happened.';
+		message = payload?.message || 'Something went wrong. Please try again.';
 		busy = false;
 	};
 
