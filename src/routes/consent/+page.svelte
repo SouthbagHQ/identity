@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { PageServerData } from './$types';
+	import { track } from '$lib/palantir';
 
 	let { data }: { data: PageServerData } = $props();
 	let warningCount = $state(0);
@@ -14,6 +15,12 @@
 		if (!accept) {
 			message = 'Denying';
 		}
+		track(accept ? 'oauth_consent_accept_clicked' : 'oauth_consent_deny_clicked', {
+			oauth_client_id: data.clientId,
+			app: data.app?.name,
+			scope: data.scope,
+			trusted: data.isTrusted
+		});
 
 		const response = await fetch('/api/auth/oauth2/consent', {
 			method: 'POST',
@@ -29,10 +36,12 @@
 		}
 
 		message = payload?.message || 'Something went wrong. Please try again.';
+		track('oauth_consent_request_failed', { oauth_client_id: data.clientId, status: response.status, message });
 		busy = false;
 	};
 
 	const runUntrustedGauntlet = async () => {
+		track('oauth_untrusted_gauntlet_started', { oauth_client_id: data.clientId, warnings: warnings.length });
 		for (const warning of warnings) {
 			warningCount += 1;
 			alert(warning);
@@ -42,6 +51,13 @@
 	};
 
 	onMount(() => {
+		track('oauth_consent_viewed', {
+			oauth_client_id: data.clientId,
+			app: data.app?.name,
+			scope: data.scope,
+			trusted: data.isTrusted,
+			known_app: Boolean(data.app)
+		});
 		if (data.isTrusted) {
 			setTimeout(() => consent(true), 350);
 		}

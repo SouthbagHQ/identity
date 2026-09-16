@@ -18,8 +18,17 @@ declare global {
 				DB: D1Database;
 				WALLETWALLET_API_KEY?: string;
 			};
+			context?: ExecutionContext;
 		}
 		// interface PageState {}
+	}
+
+	interface Window {
+		palantir?: {
+			capture(event: string, properties?: Record<string, unknown>): void;
+			identify(user: { id: string; email?: string | null; name?: string | null }): void;
+			reset(): void;
+		};
 	}
 }
 

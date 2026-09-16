@@ -2,6 +2,7 @@
 	import { authClient } from '$lib/auth-client';
 	import FaceCamera from './FaceCamera.svelte';
 	import QrScanner from './QrScanner.svelte';
+	import { track } from '$lib/palantir';
 
 	type Props = {
 		callbackURL?: string;
@@ -26,6 +27,7 @@
 
 		busy = true;
 		message = 'Verifying your face';
+		track('sign_in_submitted', { method: 'southbag_id' });
 
 		const { data, error } = await authClient.signIn.southbagId({ faceId, photo });
 
@@ -33,6 +35,7 @@
 
 		if (error) {
 			message = error.message || 'You are not you';
+			track('southbag_id_face_rejected', { error_message: error.message });
 			photo = null;
 			return;
 		}
@@ -49,6 +52,7 @@
 			class="btn-large"
 			onclick={() => {
 				open = !open;
+				track(open ? 'southbag_id_login_opened' : 'southbag_id_login_closed');
 				if (!open) reset();
 			}}
 		>

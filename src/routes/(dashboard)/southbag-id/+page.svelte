@@ -3,6 +3,7 @@
 	import { authClient } from '$lib/auth-client';
 	import FaceCamera from '$lib/components/FaceCamera.svelte';
 	import { renderQrSvg, toQrPayload } from '$lib/qr';
+	import { track } from '$lib/palantir';
 	import type { PageServerData } from './$types';
 
 	let { data, form } = $props();
@@ -30,6 +31,7 @@
 
 		busy = true;
 		message = 'Processing your face';
+		track('southbag_id_enrol_clicked');
 
 		const { error } = await authClient.southbagId.enrol({ photo });
 
@@ -37,6 +39,7 @@
 
 		if (error) {
 			message = error.message || 'That isn\'t a face';
+			track('southbag_id_enrol_rejected', { error_message: error.message });
 			return;
 		}
 
@@ -49,6 +52,7 @@
 	const deleteFace = async () => {
 		busy = true;
 		message = 'Deleting your face…';
+		track('southbag_id_forget_clicked');
 		const { error } = await authClient.southbagId.forget();
 		busy = false;
 		if (error) {
@@ -63,6 +67,7 @@
 		if (!credential) return;
 		await navigator.clipboard?.writeText(toQrPayload(credential.faceId)).catch(() => {});
 		message = 'Code copied.';
+		track('southbag_id_code_copied');
 	};
 </script>
 
@@ -86,7 +91,7 @@
 	<div class="bad-card form-stack">
 		{#if credential}
 			<strong>Your face</strong>
-			<p>If you want to replace your face, <a href="https://support.southbag.cc/ai">contact a human</a>.</p>
+			<p>If you want to replace your face, <a href="https://support.southbag.cc/ai" onclick={() => track('support_link_clicked', { from: 'southbag-id' })}>contact a human</a>.</p>
 			<button type="button" onclick={deleteFace} disabled={busy}>
 				{busy ? 'Deleting…' : 'Delete my face'}
 			</button>
@@ -131,7 +136,7 @@
 				<p class="tiny">Your id: {credential.faceId}</p>
 				<div class="button-row">
 					<button type="button" onclick={copyCode}>Copy code</button>
-					<form method="POST" action="?/wallet">
+					<form method="POST" action="?/wallet" onsubmit={() => track('wallet_pass_clicked')}>
 						<button type="submit">Add to Apple or Google Wallet</button>
 					</form>
 				</div>

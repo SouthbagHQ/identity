@@ -4,6 +4,7 @@
 	import type { LayoutData } from './$types';
     import { authClient } from '$lib/auth-client';
     import { goto } from '$app/navigation';
+	import { track } from '$lib/palantir';
 
 	let { data, children }: { data: LayoutData; children: import('svelte').Snippet } = $props();
 
@@ -24,16 +25,20 @@
 		<h2>Southbag Identity™</h2>
 		<p class="tiny">Hello, "{data.user.email}" !</p>
 		{#each links as link}
-			<a class:active={isActive(link.href)} href={link.href}>{link.label}</a>
+			<a class:active={isActive(link.href)} href={link.href} onclick={() => track('sidebar_link_clicked', { label: link.label, href: link.href })}>{link.label}</a>
 		{/each}
-		<a href="/login">Login Page</a>
-		<form method="post" action="/home?/signOut" use:enhance>
+		<a href="/login" onclick={() => track('sidebar_link_clicked', { label: 'Login Page', href: '/login' })}>Login Page</a>
+		<form method="post" action="/home?/signOut" use:enhance={() => { track('sign_out_clicked'); }}>
 			<button>Sign out</button>
 		</form>
 		<button onclick={async ()=> {
+		  track('delete_account_clicked');
 		  const {error}=await authClient.deleteUser();
 				if (!error) {
+				window.palantir?.reset();
 				goto("/deleted")
+				} else {
+				track('delete_account_failed', { error_message: error.message });
 				}
 		}}>Delete account</button>
 	</aside>

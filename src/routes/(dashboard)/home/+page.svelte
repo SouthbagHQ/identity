@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { track } from '$lib/palantir';
 	import type { PageServerData } from './$types';
 
 	let { data }: { data: PageServerData } = $props();
@@ -49,7 +50,7 @@
 	<strong>Southbag apps</strong>
 	<div class="app-grid">
 		{#each southbagApps as app}
-			<a class="app-card" href={app.href}>
+			<a class="app-card" href={app.href} onclick={() => track('southbag_app_card_clicked', { app: app.name, href: app.href })}>
 				<img class="app-logo" alt="" src="/logo.png" />
 				{app.name}
 			</a>
@@ -68,8 +69,8 @@
 					<p class="tiny"><strong>scopes:</strong> {formatScopes(app.scopes) || 'none'}</p>
 				</div>
 				<div class="app-actions">
-					<a class="button-link" href={appUrl(app.redirectUrls)}>Open</a>
-					<form method="POST" action="?/revokeConsent">
+					<a class="button-link" href={appUrl(app.redirectUrls)} onclick={() => track('third_party_app_opened', { oauth_client_id: app.clientId, app: app.name })}>Open</a>
+					<form method="POST" action="?/revokeConsent" onsubmit={() => track('revoke_consent_clicked', { oauth_client_id: app.clientId, app: app.name })}>
 						<input type="hidden" name="clientId" value={app.clientId} />
 						<button>Revoke</button>
 					</form>

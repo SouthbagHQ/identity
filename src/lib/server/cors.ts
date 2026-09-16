@@ -13,9 +13,24 @@ export const TRUSTED_ORIGINS = [
 	"https://127.0.0.1:5173",
 ];
 
+const FIRST_PARTY_DOMAIN = "southbag.cc";
+
+/** Any https://*.southbag.cc app is ours: they all ask `/api/auth/get-session` with credentials. */
+function isFirstPartyOrigin(origin: string) {
+	try {
+		const { protocol, hostname } = new URL(origin);
+		return (
+			protocol === "https:" &&
+			(hostname === FIRST_PARTY_DOMAIN || hostname.endsWith(`.${FIRST_PARTY_DOMAIN}`))
+		);
+	} catch {
+		return false;
+	}
+}
+
 export function isAllowedOrigin(origin: string | null): origin is string {
 	if (!origin) return false;
-	return TRUSTED_ORIGINS.includes(origin);
+	return TRUSTED_ORIGINS.includes(origin) || isFirstPartyOrigin(origin);
 }
 
 export function corsHeaders(origin: string | null, requestHeaders?: string | null): HeadersInit {

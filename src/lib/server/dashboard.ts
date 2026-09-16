@@ -12,6 +12,7 @@ import {
 	user
 } from '$lib/server/db/schema';
 import { syncFirstPartySkipConsent } from '$lib/server/plugins/southbag-trust';
+import { capture, palantirContext } from '$lib/server/palantir';
 
 const serializeDate = (date: Date | null | undefined) => date?.toISOString() ?? null;
 const serializeList = (value: unknown) => {
@@ -30,6 +31,13 @@ const cleanRedirects = (value: FormDataEntryValue | null) =>
 		.split(/\s|,/)
 		.map((url) => url.trim())
 		.filter(Boolean);
+
+/** Server-side Palantir event for the signed-in user, tied to their browser session. */
+export const track = (event: RequestEvent, name: string, properties: Record<string, unknown> = {}) =>
+	capture(name, event.locals.user?.id, properties, {
+		context: palantirContext(event.request),
+		waitUntil: event.platform?.context?.waitUntil?.bind(event.platform.context)
+	});
 
 export const requireUser = (event: RequestEvent) => {
 	if (!event.locals.user) {
@@ -196,6 +204,7 @@ export const revokeConsent = async (event: RequestEvent) => {
 	await db.delete(oauthAccessToken).where(tokens);
 	await db.delete(oauthRefreshToken).where(refreshTokens);
 	await db.delete(oauthConsent).where(owner);
+	track(event, 'oauth_consent_revoked', { oauth_client_id: clientId });
 
 	return { message: 'Consent revoked.' };
 };
@@ -268,6 +277,7 @@ export const updateApp = async (event: RequestEvent) => {
 		.where(eq(oauthClient.clientId, clientId));
 
 	await syncFirstPartySkipConsent(event.platform!.env.DB, clientId);
+	track(event, 'oauth_client_updated', { oauth_client_id: clientId, client_name: name, redirect_count: redirectUrls.length });
 
 	return { message: `Updated ${name}.` };
 };
@@ -292,6 +302,7 @@ export const deleteApp = async (event: RequestEvent) => {
 	if (!ownedApp) return fail(404, { message: 'Not your app.' });
 
 	await db.delete(oauthClient).where(eq(oauthClient.clientId, clientId));
+	track(event, 'oauth_client_deleted', { oauth_client_id: clientId });
 
 	return { message: 'Deleted app.' };
 };

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageServerData } from './$types';
+	import { track } from '$lib/palantir';
 
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
 </script>
@@ -21,7 +22,7 @@
 {/if}
 
 <div class="dashboard-grid">
-	<form method="post" action="?/createApp" use:enhance class="bad-card form-stack">
+	<form method="post" action="?/createApp" use:enhance={() => { track('oauth_client_create_submitted'); }} class="bad-card form-stack">
 		<strong>Create app</strong>
 		<label>
 			Application name

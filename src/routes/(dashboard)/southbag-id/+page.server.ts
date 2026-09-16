@@ -1,6 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
-import { requireUser } from '$lib/server/dashboard';
+import { requireUser, track } from '$lib/server/dashboard';
 import { getDb } from '$lib/server/db';
 import { southbagIdWalletPass } from '$lib/server/db/schema';
 import type { Actions, PageServerLoad } from './$types';
@@ -16,7 +16,10 @@ export const actions: Actions = {
 			headers: event.request.headers
 		});
 
-		if (!credential.enrolled) return fail(400, { walletError: 'Enrol your face first.' });
+		if (!credential.enrolled) {
+			track(event, 'wallet_pass_failed', { reason: 'not_enrolled' });
+			return fail(400, { walletError: 'Enrol your face first.' });
+		}
 
 		const apiKey = event.platform?.env.WALLETWALLET_API_KEY;
 		if (!apiKey) return fail(503, { walletError: 'Wallet support is not configured.' });
@@ -27,7 +30,10 @@ export const actions: Actions = {
 			.from(southbagIdWalletPass)
 			.where(eq(southbagIdWalletPass.userId, user.id))
 			.limit(1);
-		if (existing?.shareUrl) redirect(303, existing.shareUrl);
+		if (existing?.shareUrl) {
+			track(event, 'wallet_pass_opened', { fresh: false });
+			redirect(303, existing.shareUrl);
+		}
 		if (existing) return fail(409, { walletError: 'Your wallet pass is already being created.' });
 
 		const reservation = await db
@@ -66,10 +72,12 @@ export const actions: Actions = {
 				})
 			});
 		} catch {
+			track(event, 'wallet_pass_failed', { reason: 'request_failed' });
 			return fail(502, { walletError: 'Pass creation failed. Contact support before retrying.' });
 		}
 
 		if (!response.ok) {
+			track(event, 'wallet_pass_failed', { reason: 'upstream_error', status: response.status });
 			return fail(502, { walletError: 'Pass creation failed. Contact support before retrying.' });
 		}
 
@@ -87,6 +95,8 @@ export const actions: Actions = {
 			.update(southbagIdWalletPass)
 			.set({ shareUrl })
 			.where(eq(southbagIdWalletPass.userId, user.id));
+		track(event, 'wallet_pass_created');
+		track(event, 'wallet_pass_opened', { fresh: true });
 
 		redirect(303, shareUrl);
 	}

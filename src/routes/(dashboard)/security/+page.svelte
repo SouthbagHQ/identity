@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
+	import { track } from '$lib/palantir';
 
 	let { data }: { data: PageServerData } = $props();
 
@@ -47,6 +48,7 @@
 	};
 
 	const enableTwoFactor = async () => {
+		track('two_factor_setup_started');
 		try {
 			const setup = await postTwoFactor('/two-factor/enable', {
 				password: twoFactorPassword,
@@ -58,12 +60,15 @@
 				backupCodes: setup.backupCodes
 			};
 			twoFactorMessage = 'Scan this, save the backup codes, then verify the current code.';
+			track('two_factor_qr_shown', { backup_codes: setup.backupCodes?.length ?? 0 });
 		} catch (error) {
 			twoFactorMessage = error instanceof Error ? error.message : 'Two-factor setup failed';
+			track('two_factor_setup_failed', { error_message: twoFactorMessage });
 		}
 	};
 
 	const verifyTwoFactor = async () => {
+		track('two_factor_verify_clicked');
 		try {
 			await postTwoFactor('/two-factor/verify-totp', {
 				code: twoFactorCode,
@@ -78,6 +83,7 @@
 	};
 
 	const disableTwoFactor = async () => {
+		track('two_factor_disable_clicked');
 		try {
 			await postTwoFactor('/two-factor/disable', {
 				password: twoFactorPassword
@@ -109,7 +115,7 @@
 			<input bind:value={twoFactorPassword} type="password" autocomplete="current-password" />
 		</label>
 		<div class="button-row">
-			<button type="button" onclick={()=>alert("")}>Submit a security vulnerbility</button>
+			<button type="button" onclick={()=>{ track('security_bounty_clicked'); alert(""); }}>Submit a security vulnerbility</button>
 			<button type="button" onclick={enableTwoFactor}>Set up 2FA</button>
 			<button type="button" onclick={disableTwoFactor}>Disable</button>
 		</div>

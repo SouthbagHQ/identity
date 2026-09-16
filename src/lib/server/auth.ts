@@ -11,6 +11,7 @@ import { TRUSTED_ORIGINS } from "$lib/server/cors";
 import { hashPassword, verifyPassword } from "$lib/server/password";
 import { southbagTrustPlugin } from "$lib/server/plugins/southbag-trust";
 import { southbagId } from "$lib/server/plugins/southbag-id";
+import { palantirPlugin } from "$lib/server/plugins/palantir";
 
 const COOKIE_DOMAIN = "southbag.cc";
 
@@ -78,6 +79,7 @@ const authConfig = {
       issuer: "Southbag Identity™",
     }),
     southbagId(),
+    palantirPlugin(),
     openAPI(),
   ],
 } satisfies Omit<Parameters<typeof betterAuth>[0], "database" | "plugins"> & {

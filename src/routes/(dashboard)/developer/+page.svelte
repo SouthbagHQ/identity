@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageServerData } from './$types';
+	import { track } from '$lib/palantir';
 
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
 </script>
@@ -44,7 +45,7 @@
 	<div class="app-list">
 		{#each data.apps as app}
 			<article class="app-row">
-				<form method="post" action="?/updateApp" use:enhance class="form-stack">
+				<form method="post" action="?/updateApp" use:enhance={() => { track('oauth_client_update_submitted', { oauth_client_id: app.clientId }); }} class="form-stack">
 					<strong>{app.name || 'Unnamed app'}</strong>
 					<p class="tiny"><strong>client_id:</strong> {app.clientId}</p>
 					<p class="tiny"><strong>client_secret:</strong> {app.clientSecret || 'missing, somehow'}</p>
@@ -74,7 +75,7 @@
 					<p class="tiny"><strong>redirects:</strong> {app.redirectUrls || 'none'}</p>
 					<p class="tiny"><strong>homepage:</strong> {app.uri || 'none'}</p>
 					<p class="tiny"><strong>logo:</strong> {app.icon || 'none'}</p>
-					<form method="post" action="?/deleteApp" use:enhance class="form-stack">
+					<form method="post" action="?/deleteApp" use:enhance={() => { track('oauth_client_delete_submitted', { oauth_client_id: app.clientId }); }} class="form-stack">
 						<input type="hidden" name="clientId" value={app.clientId} />
 						<button>Delete</button>
 					</form>
