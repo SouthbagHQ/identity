@@ -1,13 +1,16 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { APIError } from 'better-auth/api';
+import { continueURL } from '$lib/server/oauth-continue';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = (event) => {
+	const continueTo = continueURL(event.url.searchParams);
+
 	if (event.locals.user) {
-		return redirect(302, '/home');
+		return redirect(302, continueTo);
 	}
 
-	return {};
+	return { continueTo };
 };
 
 export const actions: Actions = {
@@ -22,7 +25,7 @@ export const actions: Actions = {
 				body: {
 					email,
 					password,
-					callbackURL: '/home'
+					callbackURL: continueURL(event.url.searchParams)
 				}
 			});
 			if ('twoFactorRedirect' in result && result.twoFactorRedirect) {
@@ -35,7 +38,7 @@ export const actions: Actions = {
 			return fail(500, { message: 'Unexpected login failure. Try entering balance?' });
 		}
 
-		return redirect(302, '/home');
+		return redirect(302, continueURL(event.url.searchParams));
 	},
 	verifyTwoFactor: async (event) => {
 		const formData = await event.request.formData();
@@ -56,7 +59,7 @@ export const actions: Actions = {
 			return fail(500, { twoFactorRequired: true, message: 'Unexpected 2FA verification failure.' });
 		}
 
-		return redirect(302, '/home');
+		return redirect(302, continueURL(event.url.searchParams));
 	},
 	signUpEmail: async (event) => {
 		const formData = await event.request.formData();
@@ -70,7 +73,7 @@ export const actions: Actions = {
 					email,
 					password,
 					name: "Southbag Customer",
-					callbackURL: '/home'
+					callbackURL: continueURL(event.url.searchParams)
 				}
 			});
 		} catch (error) {
@@ -80,7 +83,7 @@ export const actions: Actions = {
 			return fail(500, { message: 'Unexpected registration failure. Still probably secure.' });
 		}
 
-		return redirect(302, '/home');
+		return redirect(302, continueURL(event.url.searchParams));
 	},
 	signOut: async (event) => {
 		await event.locals.auth.api.signOut({ headers: event.request.headers });
