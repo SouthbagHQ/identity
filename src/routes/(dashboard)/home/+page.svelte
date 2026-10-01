@@ -21,6 +21,7 @@
 		{ name: 'Southbag Drive™', href: 'https://drive.southbag.cc/auth/login' },
 		{ name: 'Southbag Office™', href: 'https://office.southbag.cc/auth/login' },
 		{ name: 'Southbag Code', href: 'https://code.southbag.cc/auth/login?return_to=/account' },
+		{ name: 'Southbag Social', href: 'https://social.southbag.cc/auth/login' },
 		{ name: 'Branch Locator', href: 'https://branch-locator.southbag.cc/' },
 		{ name: 'Southbag Support', href: 'https://support.southbag.cc/' }
 	];
