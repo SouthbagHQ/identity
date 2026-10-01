@@ -1,10 +1,17 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import SouthbagIdLogin from '$lib/components/SouthbagIdLogin.svelte';
-	import type { ActionData } from './$types';
+	import { page } from '$app/state';
+	import type { ActionData, PageData } from './$types';
 	import { track } from '$lib/palantir';
 
-	let { form }: { form: ActionData } = $props();
+	let { data, form }: { data: PageData; form: ActionData } = $props();
+
+	// Keep an app's sign-in request in the URL so the actions can send you back to it.
+	const oauthQuery = $derived(
+		new URLSearchParams([...page.url.searchParams].filter(([key]) => !key.startsWith('/'))).toString()
+	);
+	const action = (name: string) => (oauthQuery ? `?${oauthQuery}&/${name}` : `?/${name}`);
 </script>
 
 <svelte:head>
@@ -20,20 +27,20 @@
 	<h1>Welcome to Southbag Identity™</h1>
 	<p>Please log in to access your account.</p>
 
-	<SouthbagIdLogin />
+	<SouthbagIdLogin callbackURL={data.continueTo} />
 
 	<div class="bank-image" aria-hidden="true">
 		<img alt="" src="/logo.png" />
 		<span>identity</span>
 	</div>
 
-	<form method="post" action="?/signInEmail" use:enhance={() => { track('sign_in_submitted', { method: 'password' }); }} class="login-form">
+	<form method="post" action={action('signInEmail')} use:enhance={() => { track('sign_in_submitted', { method: 'password' }); }} class="login-form">
 		{#if form?.twoFactorRequired}
 			<div>
 				<p>authenticator code</p>
 				<input name="code" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" required />
 			</div>
-			<button formaction="?/verifyTwoFactor">Verify code</button>
+			<button formaction={action('verifyTwoFactor')}>Verify code</button>
 		{:else}
 		<div>
 			<p>email</p>
@@ -42,7 +49,7 @@
 		</div>
 		<div>
 			<p>password</p>
-			<input type="text" name="password" placeholder="Enter username" required />
+			<input type="password" name="password" autocomplete="current-password" placeholder="Enter username" required />
 		</div>
 		<button type="button" class="btn-large" onclick={() => { track('login_help_clicked', { label: 'Forgot Password? Chat Now' }); alert('Todo: Implement this'); }}>Forgot Password? Chat Now</button>
 		<div>
@@ -83,7 +90,7 @@
 		</div>
 		<div class="button-row">
 			<button>Submit</button>
-			<button formaction="?/signUpEmail">Register</button>
+			<button formaction={action('signUpEmail')}>Register</button>
 			<button type="button" class="btn-large" onclick={() => { track('login_help_clicked', { label: 'Chat with a Human' }); alert('Todo: Implement this'); }}>Chat with a Human</button>
 		</div>
 		{/if}
