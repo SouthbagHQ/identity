@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
+	import { invalidateAll } from '$app/navigation';
 	import { track } from '$lib/palantir';
 
 	let { data }: { data: PageServerData } = $props();
@@ -8,6 +9,15 @@
 	let twoFactorCode = $state('');
 	let twoFactorMessage = $state('');
 	let twoFactorSetup = $state<{ totpURI: string; backupCodes?: string[] } | null>(null);
+
+	let currentPassword = $state('');
+	let newPassword = $state('');
+	let confirmPassword = $state('');
+	let revokeOtherSessions = $state(true);
+	let passwordMessage = $state('');
+	let changingPassword = $state(false);
+
+	const hasPassword = $derived(data.account.providers.some((provider) => provider.hasPassword));
 
 	type TwoFactorPayload = {
 		message?: string;
@@ -82,6 +92,40 @@
 		}
 	};
 
+	const changePassword = async () => {
+		track('change_password_clicked');
+		passwordMessage = '';
+		if (newPassword !== confirmPassword) {
+			passwordMessage = 'New passwords do not match.';
+			return;
+		}
+
+		changingPassword = true;
+		try {
+			const response = await fetch('/api/auth/change-password', {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ currentPassword, newPassword, revokeOtherSessions })
+			});
+			const payload = (await response.json().catch(() => ({}))) as TwoFactorPayload;
+
+			if (!response.ok) {
+				throw new Error(payload?.message || payload?.error?.message || 'Could not change password');
+			}
+
+			currentPassword = '';
+			newPassword = '';
+			confirmPassword = '';
+			passwordMessage = 'Password changed.';
+			await invalidateAll();
+		} catch (error) {
+			passwordMessage = error instanceof Error ? error.message : 'Could not change password';
+			track('change_password_failed', { error_message: passwordMessage });
+		} finally {
+			changingPassword = false;
+		}
+	};
+
 	const disableTwoFactor = async () => {
 		track('two_factor_disable_clicked');
 		try {
@@ -141,6 +185,44 @@
 			<p class="bad-panel">{twoFactorMessage}</p>
 		{/if}
 	</div>
+
+	<form
+		class="bad-card form-stack"
+		onsubmit={(event) => {
+			event.preventDefault();
+			changePassword();
+		}}
+	>
+		<strong>Change password</strong>
+		{#if hasPassword}
+			<label>
+				Current password
+				<input bind:value={currentPassword} type="password" autocomplete="current-password" required />
+			</label>
+			<label>
+				New password
+				<input bind:value={newPassword} type="password" autocomplete="new-password" minlength="8" required />
+			</label>
+			<label>
+				Confirm new password
+				<input bind:value={confirmPassword} type="password" autocomplete="new-password" minlength="8" required />
+			</label>
+			<label>
+				<input bind:checked={revokeOtherSessions} type="checkbox" />
+				Sign out other sessions
+			</label>
+			<div class="button-row">
+				<button type="submit" disabled={changingPassword}>
+					{changingPassword ? 'Changing…' : 'Change password'}
+				</button>
+			</div>
+		{:else}
+			<p>This account signs in without a password, so there is nothing to change.</p>
+		{/if}
+		{#if passwordMessage}
+			<p class="bad-panel">{passwordMessage}</p>
+		{/if}
+	</form>
 
 	<div class="bad-card">
 		<strong>Active sessions</strong>
