@@ -18,5 +18,13 @@
 			"database_name": "identity",
 			"database_id": "bbbcde95-de11-4062-8006-18b68cc8ed89"
 		}
-	]
+	],
+	// Unfreeze fees are taken from Southbag Online Banking through its Billing entrypoint, and the
+	// freeze state is mirrored back to Banking's local status through the same binding. Deploy
+	// banking (with setStatus) first. See src/lib/server/banking.ts.
+	"services": [{ "binding": "BANKING", "service": "southbag-online-banking", "entrypoint": "Billing" }],
+	// `wrangler secret put INTERNAL_API_SECRETS` with JSON like
+	// {"southbag-git": "...", "southbag-online-banking": "...", "backfill": "..."} — one secret per
+	// service that reports or reads freezes (see src/routes/api/internal/freeze/+server.ts).
+	// The same value goes to each service as IDENTITY_INTERNAL_SECRETS with only its own entry.
 }

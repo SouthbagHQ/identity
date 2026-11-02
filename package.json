@@ -16,8 +16,9 @@
 		"db:studio": "drizzle-kit studio --config drizzle.local.config.ts",
 		"db:studio:remote": "drizzle-kit studio",
 		"cf:db:create": "wrangler d1 create identity",
-		"cf:deploy": "wrangler deploy",
-		"auth:schema": "better-auth generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes"
+		"cf:deploy": "node scripts/check-deploy.mjs && wrangler deploy",
+		"auth:schema": "better-auth generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes",
+		"test": "node --test tests/*.test.mjs"
 	},
 	"devDependencies": {
 		"@better-auth/cli": "~1.4.21",

@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 import { oauthClient, user } from './auth.schema';
 
 export const task = sqliteTable('task', {
@@ -55,5 +55,58 @@ export const southbagIdWalletPass = sqliteTable('southbag_id_wallet_pass', {
 		.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
 		.notNull()
 });
+
+
+/**
+ * Account-level freeze history. One row per freeze/unfreeze; `synced` tracks whether the
+ * after-state has been mirrored to Southbag Online Banking's local account status.
+ */
+export const freezeEvent = sqliteTable(
+	'freeze_event',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		action: text('action').notNull(), // 'frozen' | 'unfrozen'
+		reason: text('reason'),
+		origin: text('origin').notNull(), // e.g. 'git-fraud', 'banking-loan-default', 'backfill', 'unfreeze-flow'
+		actor: text('actor').notNull(), // internal API service name, or 'user'
+		synced: integer('synced', { mode: 'boolean' }).default(false).notNull(),
+		createdAt: integer('created_at', { mode: 'timestamp_ms' })
+			.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+			.notNull()
+	},
+	(table) => [index('freeze_event_userId_idx').on(table.userId, table.createdAt)]
+);
+
+/**
+ * Fees charged while unfreezing. The partial unique index makes a successful charge
+ * idempotent per key; failed attempts may be retried.
+ */
+export const freezeCharge = sqliteTable(
+	'freeze_charge',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		kind: text('kind').notNull(), // 'review' | 'wrong_answer'
+		amount: integer('amount').notNull(), // cents
+		description: text('description').notNull(),
+		status: text('status').notNull(), // 'charged' | 'failed'
+		idempotencyKey: text('idempotency_key').notNull(),
+		createdAt: integer('created_at', { mode: 'timestamp_ms' })
+			.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+			.notNull()
+	},
+	(table) => [
+		index('freeze_charge_userId_idx').on(table.userId),
+		// A successful charge is idempotent per key; failed attempts may be retried.
+		uniqueIndex('freeze_charge_charged_key')
+			.on(table.idempotencyKey)
+			.where(sql`status = 'charged'`)
+	]
+);
 
 export * from './auth.schema';

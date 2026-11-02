@@ -19,6 +19,13 @@ export const user = sqliteTable("user", {
   twoFactorEnabled: integer("two_factor_enabled", { mode: "boolean" }).default(
     false,
   ),
+  // Account-level freeze (managed by src/lib/server/freeze.ts, not better-auth). Frozen accounts
+  // are blocked across Southbag services and unfreeze at /unfreeze.
+  frozen: integer("frozen", { mode: "boolean" }).default(false).notNull(),
+  frozenReason: text("frozen_reason"),
+  frozenAt: integer("frozen_at", { mode: "timestamp_ms" }),
+  securityQuestion: text("security_question"),
+  securityStreak: integer("security_streak").default(0).notNull(),
 });
 
 export const session = sqliteTable(

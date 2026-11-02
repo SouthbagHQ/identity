@@ -537,3 +537,10 @@ a[href*="@"] {
   background: #eeeeee;
   font-weight: 700;
 }
+
+.freeze-banner {
+	background: #fff3cd;
+	border: 1px solid #e0a800;
+	padding: 0.5rem 0.75rem;
+	margin-bottom: 0.75rem;
+}
