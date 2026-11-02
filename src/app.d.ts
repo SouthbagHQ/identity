@@ -17,6 +17,10 @@ declare global {
 			env: {
 				DB: D1Database;
 				WALLETWALLET_API_KEY?: string;
+				/** Banking's Billing entrypoint (src/lib/server/banking.ts). */
+				BANKING?: import('$lib/server/banking').BankingBilling;
+				/** JSON map of service name to bearer secret for the internal freeze API. */
+				INTERNAL_API_SECRETS?: string;
 			};
 			context?: ExecutionContext;
 		}

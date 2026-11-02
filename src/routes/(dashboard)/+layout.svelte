@@ -44,6 +44,12 @@
 	</aside>
 
 	<section class="dashboard-main">
+		{#if data.freeze.frozen}
+			<div class="freeze-banner" role="alert">
+				Your account is frozen pending review. Southbag services connected to your account are blocked.
+				<a href="/unfreeze">Answer the security questions to unfreeze</a>
+			</div>
+		{/if}
 		{@render children()}
 	</section>
 	<footer>Kevin is watching</footer>
