@@ -68,7 +68,7 @@
 		<strong>Your agent tokens</strong>
 		<div class="app-list">
 			{#each data.tokens as token}
-				<article class="app-row">
+				<article class="app-row agent-token-row">
 					<div>
 						<strong>{token.name}</strong>
 						<p class="tiny">{token.prefix}…</p>
@@ -91,3 +91,15 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	/* The shared .app-row splits into content + action columns, which leaves a
+	   token row unreadably narrow inside the dashboard grid's side column.
+	   Stack the revoke action under the token details instead. */
+	.agent-token-row {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	.agent-token-row form {
+		justify-self: start;
+	}
+</style>
