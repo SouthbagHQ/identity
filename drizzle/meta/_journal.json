@@ -1,69 +1,90 @@
 {
-  "version": "7",
-  "dialect": "sqlite",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "6",
-      "when": 1782372762881,
-      "tag": "0000_lively_hellion",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1782373841549,
-      "tag": "0001_grey_franklin_richards",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1782378172393,
-      "tag": "0002_sleepy_morg",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1782457653821,
-      "tag": "0003_tranquil_reptil",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1785228628703,
-      "tag": "0004_puzzling_madelyne_pryor",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1786492800000,
-      "tag": "0005_unwrap_oauth_client_json",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "6",
-      "when": 1786491920857,
-      "tag": "0006_striped_namor",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "6",
-      "when": 1786492994200,
-      "tag": "0007_mature_sir_ram",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "6",
-      "when": 1793619671537,
-      "tag": "0008_account_freeze",
-      "breakpoints": true
-    }
-  ]
+	"version": "7",
+	"dialect": "sqlite",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "6",
+			"when": 1782372762881,
+			"tag": "0000_lively_hellion",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "6",
+			"when": 1782373841549,
+			"tag": "0001_grey_franklin_richards",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "6",
+			"when": 1782378172393,
+			"tag": "0002_sleepy_morg",
+			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "6",
+			"when": 1782457653821,
+			"tag": "0003_tranquil_reptil",
+			"breakpoints": true
+		},
+		{
+			"idx": 4,
+			"version": "6",
+			"when": 1785228628703,
+			"tag": "0004_puzzling_madelyne_pryor",
+			"breakpoints": true
+		},
+		{
+			"idx": 5,
+			"version": "6",
+			"when": 1786492800000,
+			"tag": "0005_unwrap_oauth_client_json",
+			"breakpoints": true
+		},
+		{
+			"idx": 6,
+			"version": "6",
+			"when": 1786491920857,
+			"tag": "0006_striped_namor",
+			"breakpoints": true
+		},
+		{
+			"idx": 7,
+			"version": "6",
+			"when": 1786492994200,
+			"tag": "0007_mature_sir_ram",
+			"breakpoints": true
+		},
+		{
+			"idx": 8,
+			"version": "6",
+			"when": 1793619671537,
+			"tag": "0008_account_freeze",
+			"breakpoints": true
+		},
+		{
+			"idx": 9,
+			"version": "6",
+			"when": 1793700000000,
+			"tag": "0009_agent_tokens",
+			"breakpoints": true
+		},
+		{
+			"idx": 10,
+			"version": "6",
+			"when": 1793800000000,
+			"tag": "0010_mcp_calls",
+			"breakpoints": true
+		},
+		{
+			"idx": 11,
+			"version": "6",
+			"when": 1793900000000,
+			"tag": "0011_agent_token_scopes",
+			"breakpoints": true
+		}
+	]
 }
