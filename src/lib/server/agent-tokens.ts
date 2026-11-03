@@ -39,34 +39,44 @@ export async function generateAgentToken() {
 	};
 }
 
+// What a token may do, enforced by every service's /mcp endpoint. 'read' covers the read tools
+// (BILLED at each service's per-request fee - read is not free). 'write' adds the non-money write
+// tools (standard action fees on top). Money-moving tools are never in scope: no scope value
+// enables them, and the UI cannot issue one.
+export type AgentTokenScope = 'read' | 'write';
+export const parseScopes = (value: unknown): AgentTokenScope[] =>
+	typeof value === 'string' && value.split(/\s+/).includes('write') ? ['read', 'write'] : ['read'];
+
 export interface AgentTokenRow {
 	id: string;
 	user_id: string;
 	name: string;
 	token_hash: string;
 	token_prefix: string;
+	scopes: string;
 	created_at: number;
 	last_used_at: number | null;
 	revoked_at: number | null;
 }
 
-export async function createAgentToken(db: D1Database, userId: string, name: string) {
+export async function createAgentToken(db: D1Database, userId: string, name: string, write = false) {
 	const cleaned = String(name || '').trim().slice(0, 80) || 'Unnamed agent';
 	const { token, hash, prefix } = await generateAgentToken();
 	const id = crypto.randomUUID();
+	const scopes = write ? 'read write' : 'read';
 	await db
-		.prepare('INSERT INTO agent_token (id, user_id, name, token_hash, token_prefix, created_at) VALUES (?, ?, ?, ?, ?, ?)')
-		.bind(id, userId, cleaned, hash, prefix, now())
+		.prepare('INSERT INTO agent_token (id, user_id, name, token_hash, token_prefix, scopes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+		.bind(id, userId, cleaned, hash, prefix, scopes, now())
 		.run();
-	return { id, name: cleaned, prefix, token };
+	return { id, name: cleaned, prefix, scopes, token };
 }
 
 /** Owner's view: never the hash, and both live and revoked tokens so revocation is visible. */
 export async function listAgentTokens(db: D1Database, userId: string) {
 	const { results } = await db
-		.prepare('SELECT id, name, token_prefix, created_at, last_used_at, revoked_at FROM agent_token WHERE user_id = ? ORDER BY created_at DESC')
+		.prepare('SELECT id, name, token_prefix, scopes, created_at, last_used_at, revoked_at FROM agent_token WHERE user_id = ? ORDER BY created_at DESC')
 		.bind(userId)
-		.all<Pick<AgentTokenRow, 'id' | 'name' | 'token_prefix' | 'created_at' | 'last_used_at' | 'revoked_at'>>();
+		.all<Pick<AgentTokenRow, 'id' | 'name' | 'token_prefix' | 'scopes' | 'created_at' | 'last_used_at' | 'revoked_at'>>();
 	return results;
 }
 

@@ -91,3 +91,16 @@ test('listing shows prefixes and revocation, never hashes', async () => {
   // Other users see nothing of mine.
   assert.deepEqual(await listAgentTokens(db, 'u2'), []);
 });
+
+test('scopes: tokens default to read-only; write is opt-in; nothing else parses', async () => {
+  const { parseScopes } = await import('../src/lib/server/agent-tokens.ts');
+  assert.deepEqual(parseScopes(undefined), ['read']);
+  assert.deepEqual(parseScopes('read'), ['read']);
+  assert.deepEqual(parseScopes('read write'), ['read', 'write']);
+  assert.deepEqual(parseScopes('money admin'), ['read']); // unknown scopes never widen access
+  const { db } = setup();
+  const ro = await createAgentToken(db, 'u1', 'reader');
+  const rw = await createAgentToken(db, 'u1', 'writer', true);
+  assert.deepEqual(parseScopes((await resolveAgentToken(db, ro.token)).scopes), ['read']);
+  assert.deepEqual(parseScopes((await resolveAgentToken(db, rw.token)).scopes), ['read', 'write']);
+});

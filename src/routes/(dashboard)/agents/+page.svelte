@@ -36,11 +36,24 @@
 			Agent name
 			<input name="name" type="text" maxlength="80" placeholder="My very competent assistant" />
 		</label>
+		<fieldset class="form-stack">
+			<legend class="tiny">This token may</legend>
+			<label>
+				<input type="checkbox" name="read" checked disabled />
+				Read your data. Billed: every request costs each service's posted request fee.
+			</label>
+			<label>
+				<input type="checkbox" name="write" />
+				Take write actions (post, comment, upload, create documents). Each action also costs
+				that service's standard action fee, itemised on the receipt.
+			</label>
+			<p class="tiny">Money movement (transfers, payments) is never available to agents, whatever is ticked.</p>
+		</fieldset>
 		<div class="button-row">
 			<button type="submit">Issue token</button>
 		</div>
 		{#if form?.created}
-			<p class="tiny">Shown once. Copy it now; Southbag stores only its fingerprint.</p>
+			<p class="tiny">Shown once. Copy it now; Southbag stores only its fingerprint. This token may: {form.created.scopes.includes('write') ? 'read + write' : 'read only'}.</p>
 			<label>
 				Token
 				<textarea readonly rows="3" value={form.created.token}></textarea>
@@ -59,6 +72,7 @@
 					<div>
 						<strong>{token.name}</strong>
 						<p class="tiny">{token.prefix}…</p>
+						<p class="tiny">May: {token.scopes?.includes('write') ? 'read + write' : 'read only'}</p>
 						<p class="tiny">Issued {formatDate(token.createdAt)} · Last used {formatDate(token.lastUsedAt)}</p>
 						{#if token.revokedAt}
 							<p class="tiny">Revoked {formatDate(token.revokedAt)}</p>

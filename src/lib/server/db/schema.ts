@@ -125,6 +125,7 @@ export const agentToken = sqliteTable(
 		name: text('name').notNull(),
 		tokenHash: text('token_hash').notNull(),
 		tokenPrefix: text('token_prefix').notNull(),
+		scopes: text('scopes').notNull().default('read'),
 		createdAt: integer('created_at', { mode: 'timestamp_ms' })
 			.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
 			.notNull(),

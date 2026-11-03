@@ -12,7 +12,7 @@
 
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { authenticateInternal } from '$lib/server/internal-api';
-import { resolveAgentToken } from '$lib/server/agent-tokens';
+import { parseScopes, resolveAgentToken } from '$lib/server/agent-tokens';
 
 export const POST: RequestHandler = async (event) => {
 	const auth = await authenticateInternal(event);
@@ -38,6 +38,7 @@ export const POST: RequestHandler = async (event) => {
 		tokenName: row.name,
 		userId: user.id,
 		email: user.email,
-		name: user.name
+		name: user.name,
+		scopes: parseScopes(row.scopes)
 	});
 };
