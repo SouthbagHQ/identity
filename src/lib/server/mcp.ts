@@ -59,6 +59,7 @@ const authFailed = (status: number, text: string): AgentAuth => ({ status, text 
 // Bearer token -> the local agent_token table, fresh on every call (no caching: a cached 'valid'
 // answer is a revocation bypass window). 401 unknown/revoked token.
 async function resolveAgent(db: D1Database, token: string): Promise<AgentAuth> {
+	if (!token) return authFailed(401, 'Missing agent token. Tokens are issued at https://identity.southbag.cc/agents and presented as a bearer token.');
 	const row = await resolveAgentToken(db, token);
 	if (!row) return authFailed(401, 'Unknown or revoked agent token. Tokens are issued at https://identity.southbag.cc/agents');
 	const user = await db.prepare('SELECT id, email, name FROM user WHERE id = ?').bind(row.user_id).first<{ id: string; email: string | null; name: string | null }>();
