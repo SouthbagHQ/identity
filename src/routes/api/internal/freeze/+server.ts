@@ -9,44 +9,11 @@
 // one service can be revoked without rotating the others. Unconfigured = closed (503).
 
 import { json, type RequestHandler } from '@sveltejs/kit';
+import { authenticateInternal } from '$lib/server/internal-api';
 import { getFreezeStatus, setFrozen, syncPending } from '$lib/server/freeze';
 
-async function sha256(value: string): Promise<string> {
-	const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
-	return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
-}
-
-/** The service name whose configured secret matches the bearer token, or null. */
-async function actorFor(env: Record<string, unknown>, token: string): Promise<string | null> {
-	const raw = typeof env.INTERNAL_API_SECRETS === 'string' ? env.INTERNAL_API_SECRETS : '';
-	if (!raw) return null;
-	let secrets: Record<string, string>;
-	try {
-		secrets = JSON.parse(raw);
-	} catch {
-		return null;
-	}
-	const given = await sha256(token);
-	for (const [name, secret] of Object.entries(secrets)) {
-		if (typeof secret === 'string' && secret && (await sha256(secret)) === given) return name;
-	}
-	return null;
-}
-
-async function authenticate(event: Parameters<RequestHandler>[0]): Promise<{ actor: string } | Response> {
-	const env = (event.platform?.env ?? {}) as Record<string, unknown>;
-	const token = event.request.headers.get('authorization')?.match(/^Bearer (.+)$/i)?.[1];
-	if (!token) return json({ error: 'unauthorized' }, { status: 401 });
-	const actor = await actorFor(env, token);
-	if (!actor) {
-		const configured = typeof env.INTERNAL_API_SECRETS === 'string' && env.INTERNAL_API_SECRETS.length > 0;
-		return json({ error: configured ? 'forbidden' : 'internal API not configured' }, { status: configured ? 403 : 503 });
-	}
-	return { actor };
-}
-
 export const GET: RequestHandler = async (event) => {
-	const auth = await authenticate(event);
+	const auth = await authenticateInternal(event);
 	if (auth instanceof Response) return auth;
 	const userId = event.url.searchParams.get('userId') ?? '';
 	if (!userId) return json({ error: 'userId is required' }, { status: 400 });
@@ -60,7 +27,7 @@ export const GET: RequestHandler = async (event) => {
 };
 
 export const POST: RequestHandler = async (event) => {
-	const auth = await authenticate(event);
+	const auth = await authenticateInternal(event);
 	if (auth instanceof Response) return auth;
 	let body: { userId?: unknown; reason?: unknown; origin?: unknown };
 	try {

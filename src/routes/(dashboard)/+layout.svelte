@@ -13,7 +13,8 @@
 		{ href: '/account', label: 'Account' },
 		{ href: '/security', label: 'Security' },
 		{ href: '/southbag-id', label: 'Southbag ID™' },
-		{ href: '/developer', label: 'Developer' }
+		{ href: '/developer', label: 'Developer' },
+		{ href: '/agents', label: 'Agents' }
 	];
 
 	const isActive = (href: string) => page.url.pathname === href || page.url.pathname.startsWith(`${href}/`);

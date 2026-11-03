@@ -109,4 +109,29 @@ export const freezeCharge = sqliteTable(
 	]
 );
 
+
+/**
+ * Personal access tokens for a customer's own agent (MCP). Only the SHA-256 hash is stored; the
+ * full token is shown once at creation. Services resolve tokens through the internal API, fresh on
+ * every call, so a revoke here takes effect immediately Southbag-wide.
+ */
+export const agentToken = sqliteTable(
+	'agent_token',
+	{
+		id: text('id').primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		name: text('name').notNull(),
+		tokenHash: text('token_hash').notNull(),
+		tokenPrefix: text('token_prefix').notNull(),
+		createdAt: integer('created_at', { mode: 'timestamp_ms' })
+			.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+			.notNull(),
+		lastUsedAt: integer('last_used_at', { mode: 'timestamp_ms' }),
+		revokedAt: integer('revoked_at', { mode: 'timestamp_ms' })
+	},
+	(table) => [uniqueIndex('agent_token_hash_idx').on(table.tokenHash), index('agent_token_userId_idx').on(table.userId)]
+);
+
 export * from './auth.schema';
