@@ -40,14 +40,14 @@
 			<legend class="tiny">This token may</legend>
 			<label class="scope-option">
 				<input type="checkbox" name="read" checked disabled />
-				<span>Read your data. Billed: every request costs each service's posted request fee.</span>
+				<span>Read your data.</span>
 			</label>
 			<label class="scope-option">
 				<input type="checkbox" name="write" />
-				<span>Take write actions (post, comment, upload, create documents). Each action also costs
-				that service's standard action fee, itemised on the receipt.</span>
+				<span>Take write actions (post, comment, upload, create documents).</span>
 			</label>
-			<p class="tiny">Money movement (transfers, payments) is never available to agents, whatever is ticked.</p>
+			<p class="tiny">Each tool invocation costs $1, plus any standard action fees. Setup and tool discovery are free.</p>
+			<p class="tiny">Transfers and payments are not available in this version.</p>
 		</fieldset>
 		<div class="button-row">
 			<button type="submit">Issue token</button>
