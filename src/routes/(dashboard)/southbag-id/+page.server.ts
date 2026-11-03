@@ -64,7 +64,7 @@ export const actions: Actions = {
 					stripURL: 'https://southbag.cc/logo.png',
 					primaryFields: [{ label: 'Email', value: user.email }],
 					secondaryFields: [
-						{ label: 'Name', value: 'Southbag Customer' },
+						{ label: 'Name', value: user.name },
 						{ label: 'Date of birth', value: credential.dateOfBirth }
 					],
 					headerFields: [{ label: 'Kevin', value: 'Watching' }],

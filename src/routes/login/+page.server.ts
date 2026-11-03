@@ -65,6 +65,7 @@ export const actions: Actions = {
 		const formData = await event.request.formData();
 		const email = formData.get('email')?.toString() ?? '';
 		const password = formData.get('password')?.toString() ?? '';
+		const name = formData.get('name')?.toString().trim() ?? '';
 
 		try {
 			await event.locals.auth.api.signUpEmail({
@@ -72,7 +73,9 @@ export const actions: Actions = {
 				body: {
 					email,
 					password,
-					name: "Southbag Customer",
+					// Register the name the customer actually gave. Nameless
+					// applicants still receive the standard issue.
+					name: name || "Southbag Customer",
 					callbackURL: continueURL(event.url.searchParams)
 				}
 			});
