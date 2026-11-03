@@ -38,14 +38,14 @@
 		</label>
 		<fieldset class="form-stack">
 			<legend class="tiny">This token may</legend>
-			<label>
+			<label class="scope-option">
 				<input type="checkbox" name="read" checked disabled />
-				Read your data. Billed: every request costs each service's posted request fee.
+				<span>Read your data. Billed: every request costs each service's posted request fee.</span>
 			</label>
-			<label>
+			<label class="scope-option">
 				<input type="checkbox" name="write" />
-				Take write actions (post, comment, upload, create documents). Each action also costs
-				that service's standard action fee, itemised on the receipt.
+				<span>Take write actions (post, comment, upload, create documents). Each action also costs
+				that service's standard action fee, itemised on the receipt.</span>
 			</label>
 			<p class="tiny">Money movement (transfers, payments) is never available to agents, whatever is ticked.</p>
 		</fieldset>
@@ -101,5 +101,59 @@
 	}
 	.agent-token-row form {
 		justify-self: start;
+	}
+
+	/* Give the token list a usable share of the desktop grid. Must stay
+	   inside the desktop media query: the global stylesheet collapses
+	   .dashboard-grid to one column at <=820px and a scoped rule would
+	   otherwise override that and squeeze the mobile layout. */
+	@media (min-width: 821px) {
+		.dashboard-grid {
+			grid-template-columns: minmax(0, 1.25fr) minmax(340px, 1fr);
+		}
+	}
+
+	/* Scope choices are the important control on this page: make the boxes
+	   unmistakable and the rows compact, in the site's outset-border style. */
+	fieldset {
+		border: 2px ridge #ddd;
+		padding: 0.6rem 0.75rem;
+	}
+	fieldset.form-stack {
+		gap: 0.5rem;
+	}
+	.scope-option {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.6rem;
+		transform: none;
+		filter: none;
+		text-shadow: none;
+	}
+	.scope-option input[type='checkbox'] {
+		appearance: none;
+		width: 1.3rem;
+		height: 1.3rem;
+		flex: none;
+		margin: 0.1rem 0 0;
+		border: 2px solid #333;
+		background: #ffffff;
+		box-shadow: 0 0 10px rgb(0 0 0 / 50%);
+		display: inline-grid;
+		place-content: center;
+		cursor: pointer;
+	}
+	.scope-option input[type='checkbox']:checked {
+		background: #cfe3ff;
+	}
+	.scope-option input[type='checkbox']:checked::after {
+		content: 'X';
+		font-weight: 700;
+		font-size: 1rem;
+		line-height: 1;
+	}
+	.scope-option input[type='checkbox']:disabled {
+		cursor: not-allowed;
+		opacity: 0.8;
 	}
 </style>
