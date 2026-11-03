@@ -1,7 +1,8 @@
 <script lang="ts">
-	import type { PageServerData } from './$types';
+	import { enhance } from '$app/forms';
+	import type { ActionData, PageServerData } from './$types';
 
-	let { data }: { data: PageServerData } = $props();
+	let { data, form }: { data: PageServerData; form: ActionData } = $props();
 
 	const formatDate = (value: string | null | undefined) => {
 		if (!value) return 'Not recorded';
@@ -25,7 +26,16 @@
 <div class="dashboard-grid">
 	<div class="bad-card">
 		<strong>Name</strong>
-		<p>{data.account.name}</p>
+		<p class="account-name">{data.account.name}</p>
+		<form method="post" action="?/changeName" use:enhance class="form-stack">
+			<input name="name" value={data.account.name} maxlength="100" required />
+			<button>Change name</button>
+		</form>
+		{#if form?.nameError}
+			<p class="tiny">{form.nameError}</p>
+		{:else if form?.nameChanged}
+			<p class="tiny">Name updated. Other Southbag services may show it as your sessions refresh. Southbag Social keeps its own display name - change it in Social's settings.</p>
+		{/if}
 	</div>
 	<div class="bad-card">
 		<strong>Email</strong>
@@ -57,3 +67,9 @@
 		{/each}
 	</div>
 </div>
+
+<style>
+	.account-name {
+		overflow-wrap: anywhere;
+	}
+</style>
