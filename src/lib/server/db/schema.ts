@@ -135,3 +135,20 @@ export const agentToken = sqliteTable(
 );
 
 export * from './auth.schema';
+
+/**
+ * Agent (MCP) call journal: exactly-once semantics for tools/call retries. A row starts 'pending'
+ * before any fee moves and ends 'done' with the full result, so a retried Idempotency-Key replays
+ * the stored answer instead of charging again. A row left 'pending' is an UNKNOWN outcome: never
+ * re-run, reconciliation-required (see src/lib/server/mcp.ts).
+ */
+export const mcpCall = sqliteTable('mcp_call', {
+	idempotencyKey: text('idempotency_key').primaryKey(),
+	userId: text('user_id').notNull(),
+	tool: text('tool').notNull(),
+	argsHash: text('args_hash').notNull().default(''),
+	status: text('status').notNull().default('pending'), // 'pending' | 'done'
+	response: text('response'),
+	createdAt: integer('created_at').notNull(),
+	updatedAt: integer('updated_at').notNull()
+});
