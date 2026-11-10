@@ -58,6 +58,12 @@ const authConfig = {
     oauthProvider({
       loginPage: "/login",
       consentPage: "/consent",
+      // An hour, not the library's ten minutes. The signed oauth_query
+      // (and the authorization code) expired while slow clients - the OS
+      // shell's ten-dialogue consent gauntlet under emulation - were still
+      // working through the consent page they had just been served, and the
+      // user saw only "Something went wrong. Please try again."
+      codeExpiresIn: 3600,
       allowDynamicClientRegistration: true,
       allowUnauthenticatedClientRegistration: true,
       allowPlainCodeChallengeMethod: true,
