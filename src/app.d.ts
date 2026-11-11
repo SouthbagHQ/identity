@@ -21,6 +21,7 @@ declare global {
 				BANKING?: import('$lib/server/banking').BankingBilling;
 				/** JSON map of service name to bearer secret for the internal freeze API. */
 				INTERNAL_API_SECRETS?: string;
+				INTERNAL_API_SECRETS_NEXT?: string;
 			};
 			context?: ExecutionContext;
 		}

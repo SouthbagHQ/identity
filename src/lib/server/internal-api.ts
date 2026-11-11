@@ -14,17 +14,18 @@ async function sha256(value: string): Promise<string> {
 
 /** The service name whose configured secret matches the bearer token, or null. */
 async function actorFor(env: Record<string, unknown>, token: string): Promise<string | null> {
-	const raw = typeof env.INTERNAL_API_SECRETS === 'string' ? env.INTERNAL_API_SECRETS : '';
-	if (!raw) return null;
-	let secrets: Record<string, string>;
-	try {
-		secrets = JSON.parse(raw);
-	} catch {
-		return null;
-	}
 	const given = await sha256(token);
-	for (const [name, secret] of Object.entries(secrets)) {
-		if (typeof secret === 'string' && secret && (await sha256(secret)) === given) return name;
+	// Preserve the original map while an optional next map is rolled out. Validate each
+	// independently: malformed or absent next keys cannot disable existing callers.
+	for (const key of ['INTERNAL_API_SECRETS', 'INTERNAL_API_SECRETS_NEXT']) {
+		const raw = typeof env[key] === 'string' ? env[key] as string : '';
+		if (!raw) continue;
+		let secrets: unknown;
+		try { secrets = JSON.parse(raw); } catch { continue; }
+		if (!secrets || typeof secrets !== 'object' || Array.isArray(secrets)) continue;
+		for (const [name, secret] of Object.entries(secrets)) {
+			if (name && typeof secret === 'string' && secret && (await sha256(secret)) === given) return name;
+		}
 	}
 	return null;
 }
@@ -36,7 +37,7 @@ export async function authenticateInternal(event: RequestEvent): Promise<{ actor
 	if (!token) return json({ error: 'unauthorized' }, { status: 401 });
 	const actor = await actorFor(env, token);
 	if (!actor) {
-		const configured = typeof env.INTERNAL_API_SECRETS === 'string' && env.INTERNAL_API_SECRETS.length > 0;
+		const configured = ['INTERNAL_API_SECRETS', 'INTERNAL_API_SECRETS_NEXT'].some(key => typeof env[key] === 'string' && (env[key] as string).length > 0);
 		return json({ error: configured ? 'forbidden' : 'internal API not configured' }, { status: configured ? 403 : 503 });
 	}
 	return { actor };
