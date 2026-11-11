@@ -45,3 +45,7 @@ bun run build
 ```
 
 You can preview the production build with `bun run preview`.
+
+### Public-client account status
+
+`GET /api/account/status` is a read-only endpoint for a signed-in user's OAuth bearer (requires the provider's `openid` userinfo validation). It returns `{ sub, email, frozen }` from the token owner's current user row, with `Cache-Control: no-store`. It does not accept a user ID, cookie-only login, service secret, freeze reason or mutation. Invalid tokens return401; missing/deleted accounts return403; status failures return503. The internal service freeze API and paid recovery remain unchanged. This route is a prerequisite for OS account-freeze gating; deploy it before the dependent OS, only after rollout approval.
