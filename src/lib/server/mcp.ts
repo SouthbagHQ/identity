@@ -185,7 +185,11 @@ async function handleToolsCall(request: Request, env: Env, message: { id: unknow
 		amount: MCP_REQUEST_FEE_CENTS,
 		product: 'Southbag Identity',
 		description: MCP_REQUEST_FEE_DESCRIPTION,
-		idempotencyKey: feeKey(auth.user.id, key)
+		idempotencyKey: feeKey(auth.user.id, key),
+		// Identity is the freeze source of truth and refused frozen accounts above; the credential
+		// lets Banking skip a central status callback that would deadlock (Identity -> Banking ->
+		// Identity). See Billing.charge in banking's worker.js.
+		feeToken: typeof env.FREEZE_FEE_TOKEN === 'string' ? env.FREEZE_FEE_TOKEN : undefined
 	});
 
 	let result: Json;
