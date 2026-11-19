@@ -2,7 +2,7 @@ import { env } from "$env/dynamic/private";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { sveltekitCookies } from "better-auth/svelte-kit";
-import { jwt, twoFactor } from "better-auth/plugins";
+import { jwt, twoFactor, username } from "better-auth/plugins";
 import { oauthProvider } from "@better-auth/oauth-provider";
 import { getRequestEvent } from "$app/server";
 import { getDb } from "$lib/server/db";
@@ -50,6 +50,11 @@ const authConfig = {
     },
   },
   plugins: [
+    // The canonical Southbag username lives here; every service derives its handle from it.
+    username({
+      minUsernameLength: 3,
+      maxUsernameLength: 20,
+    }),
     jwt({
       jwt: {
         issuer: env.ORIGIN,
@@ -76,6 +81,12 @@ const authConfig = {
         "transfer_everything",
         "offline_access",
       ],
+      // The canonical Southbag username rides along as preferred_username so every
+      // service can derive its handle from Identity instead of inventing its own.
+      customUserInfoClaims: async ({ user, scopes }) =>
+        scopes.includes("profile")
+          ? { preferred_username: (user as { username?: string | null }).username ?? undefined }
+          : {},
       silenceWarnings: {
         oauthAuthServerConfig: true,
         openidConfig: true,

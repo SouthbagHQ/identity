@@ -38,6 +38,35 @@
 		{/if}
 	</div>
 	<div class="bad-card">
+		<strong>Username</strong>
+		<p class="account-name">{data.account.username ?? 'Not chosen'}</p>
+		<form method="post" action="?/changeUsername" use:enhance class="form-stack">
+			<input
+				name="username"
+				value={data.account.username ?? ''}
+				placeholder="3-20 letters, digits, underscores"
+				maxlength="20"
+				required
+			/>
+			<button>{data.account.username ? 'Change username ($1.00)' : 'Choose username'}</button>
+		</form>
+		<p class="tiny">
+			Your username follows you across every Southbag service. The first one is no charge.
+			Changing it costs $1.00. Fees are final.
+		</p>
+		{#if form?.usernameError}
+			<p class="tiny">{form.usernameError}</p>
+		{:else if form?.usernameChanged}
+			<p class="tiny">
+				{form?.already
+					? 'That is already your username. Kevin noted the enthusiasm.'
+					: form?.usernameFee
+						? `Username updated. Fee collected: ${form.usernameFee}.`
+						: 'Username recorded. The next one costs money.'}
+			</p>
+		{/if}
+	</div>
+	<div class="bad-card">
 		<strong>Email</strong>
 		<p>{data.account.email}</p>
 		<p>{data.account.emailVerified ? 'Verified' : 'Not verified'}</p>
