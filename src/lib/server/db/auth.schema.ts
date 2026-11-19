@@ -3,6 +3,10 @@ import { sqliteTable, text, integer, index } from "drizzle-orm/sqlite-core";
 
 export const user = sqliteTable("user", {
   id: text("id").primaryKey(),
+  // The canonical Southbag username (better-auth username plugin). Services derive their
+  // handles from this via userinfo; changing it is available on the account page for a fee.
+  username: text("username").unique(),
+  displayUsername: text("display_username"),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: integer("email_verified", { mode: "boolean" })
