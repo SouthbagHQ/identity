@@ -150,6 +150,7 @@ export const getAccountProfile = async (event: RequestEvent) => {
 		.select({
 			id: user.id,
 			name: user.name,
+			username: user.username,
 			email: user.email,
 			emailVerified: user.emailVerified,
 			image: user.image,
